@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "ship-in-a-bottle",
+	"version": "${version}",
+	"name": "Ship In A Bottle",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/ship-in-a-bottle/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"g_mungus.ship_in_a_bottle.ShipInABottle"
+		]
+	},
+	"mixins": [
+		"ship-in-a-bottle.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
