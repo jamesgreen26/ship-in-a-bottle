@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "ship-in-a-bottle:block/ship_assembler_bottom",
+    "side": "ship-in-a-bottle:block/ship_assembler_side",
+    "front": "ship-in-a-bottle:block/ship_assembler_side",
+    "top": "ship-in-a-bottle:block/ship_assembler_top"
+  }
+}
