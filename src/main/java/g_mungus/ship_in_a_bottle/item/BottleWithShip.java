@@ -8,7 +8,9 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -21,22 +23,29 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.valkyrienskies.eureka.EurekaConfig;
+import org.valkyrienskies.eureka.util.ShipAssembler;
 
 import java.util.List;
 
 public class BottleWithShip extends Item {
-    private final String shipName;
+
 
 
     @Override
     public void appendTooltip(ItemStack itemStack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+        String shipName;
+        if (itemStack.hasNbt() && itemStack.getNbt().contains("Ship")) {
+            shipName = itemStack.getNbt().getString("Ship");
+        } else {
+            shipName = "Sloop";
+        }
         tooltip.add(Text.of("Ship: " + shipName));
     }
 
 
     public BottleWithShip(Settings settings) {
         super(settings);
-        shipName = "HMS Placeholder";
     }
 
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -71,28 +80,38 @@ public class BottleWithShip extends Item {
                                 1f // Pitch multiplier, 1 is normal, 0.5 is half pitch, etc
                         );
 
+                        String shipName;
+                        if (itemStack.hasNbt() && itemStack.getNbt().contains("Ship")) {
+                            shipName = itemStack.getNbt().getString("Ship");
+                        } else {
+                            shipName = "sloop";
+                        }
 
-
-                        StructurePlacer placer = new StructurePlacer((ServerWorld) world, new Identifier("ship-in-a-bottle", "sloop"), blockPos);
+                        StructurePlacer placer = new StructurePlacer((ServerWorld) world, new Identifier("ship-in-a-bottle", shipName), blockPos);
 
                         Vec3i size = placer.getSize();
 
                         Direction facing = user.getHorizontalFacing();
                         BlockRotation rotation;
                         BlockPos placerOffset;
+                        BlockPos assemblyOffset;
 
                         if (facing == Direction.NORTH) {
                             rotation = BlockRotation.NONE;
                             placerOffset = new BlockPos((size.getX() / -2), 10, (size.getZ() / -2) - 5);
+                            assemblyOffset = new BlockPos(0, 12, -5);
                         } else if (facing == Direction.EAST) {
                             rotation = BlockRotation.CLOCKWISE_90;
                             placerOffset = new BlockPos((size.getZ() / 2) + 5, 10, (size.getX() / -2));
+                            assemblyOffset = new BlockPos(5, 12, 0);
                         } else if (facing == Direction.SOUTH) {
                             rotation = BlockRotation.CLOCKWISE_180;
                             placerOffset = new BlockPos((size.getX() / 2), 10, (size.getZ() / 2) + 5);
+                            assemblyOffset = new BlockPos(0, 12, 5);
                         } else {
                             rotation = BlockRotation.COUNTERCLOCKWISE_90;
                             placerOffset = new BlockPos((size.getZ() / -2) - 5, 10, (size.getX() / 2));
+                            assemblyOffset = new BlockPos(-5, 12, 0);
                         }
 
 
@@ -100,7 +119,14 @@ public class BottleWithShip extends Item {
                         placer.setOffset(placerOffset);
                         placer.setRotation(rotation);
 
-                        placer.loadStructure();
+                        if (placer.loadStructure()){
+                            BlockPos pos = blockPos.add(assemblyOffset);
+                            ShipAssembler.INSTANCE.collectBlocks((ServerWorld) world,pos, a-> !a.isAir() && !a.isOf(Blocks.WATER) && !a.isOf(Blocks.KELP) && !a.isOf(Blocks.KELP_PLANT) && !EurekaConfig.SERVER.getBlockBlacklist().contains(Registries.BLOCK.getKey(a.getBlock()).toString()));
+                            //world.setBlockState(pos, Blocks.BLUE_WOOL.getDefaultState());
+                        }
+
+
+
                     }
                     return TypedActionResult.success(new ItemStack(ModItems.BOTTLEWITHOUTSHIP), world.isClient());
                 } else if (world.isClient()){
