@@ -20,13 +20,25 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.core.api.ships.Ship;
+import org.valkyrienskies.core.apigame.VSCore;
+import org.valkyrienskies.core.impl.game.ships.ShipData;
+import org.valkyrienskies.core.impl.game.ships.ShipDataCommon;
+import org.valkyrienskies.core.impl.game.ships.ShipObject;
 import org.valkyrienskies.eureka.EurekaConfig;
 import org.valkyrienskies.eureka.util.ShipAssembler;
+import org.valkyrienskies.mod.common.ShipSavedData;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.List;
+import java.util.Objects;
+
+import static org.valkyrienskies.mod.common.ValkyrienSkiesMod.vsCore;
 
 public class BottleWithShip extends Item {
 
@@ -121,7 +133,9 @@ public class BottleWithShip extends Item {
 
                         if (placer.loadStructure()){
                             BlockPos pos = blockPos.add(assemblyOffset);
-                            ShipAssembler.INSTANCE.collectBlocks((ServerWorld) world,pos, a-> !a.isAir() && !a.isOf(Blocks.WATER) && !a.isOf(Blocks.KELP) && !a.isOf(Blocks.KELP_PLANT) && !EurekaConfig.SERVER.getBlockBlacklist().contains(Registries.BLOCK.getKey(a.getBlock()).toString()));
+                            Objects.requireNonNull(ShipAssembler.INSTANCE.collectBlocks((ServerWorld) world, pos, a -> !a.isAir() && !a.isOf(Blocks.WATER) && !a.isOf(Blocks.KELP) && !a.isOf(Blocks.KELP_PLANT) && !EurekaConfig.SERVER.getBlockBlacklist().contains(Registries.BLOCK.getKey(a.getBlock()).toString()))).setSlug(shipName);
+
+
                             //world.setBlockState(pos, Blocks.BLUE_WOOL.getDefaultState());
                         }
 
