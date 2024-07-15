@@ -1,15 +1,10 @@
 package g_mungus.ship_in_a_bottle.item;
 
-import g_mungus.ship_in_a_bottle.ShipInABottle;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -20,20 +15,16 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
-import net.minecraft.world.StructureSpawns;
 import net.minecraft.world.World;
 import org.joml.Vector3i;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.api.ships.properties.IShipActiveChunksSet;
 import org.valkyrienskies.core.api.world.LevelYRange;
-import org.valkyrienskies.core.apigame.constraints.VSConstraintKt;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
-import org.valkyrienskies.physics_api.voxel.LodBlockBoundingBox;
-import org.valkyrienskies.physics_api.voxel.LodBlockBoundingBoxKt;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -85,6 +76,10 @@ public class BottleWithoutShip extends Item {
 
                 if (!world.isClient()) {
 
+                    Integer[] maxShipCoords = {blockPos.getX(), blockPos.getY(), blockPos.getZ()};
+                    Integer[] minShipCoords = {blockPos.getX(), blockPos.getY(), blockPos.getZ()};
+
+
                     ServerWorld serverWorld = (ServerWorld) world;
                     List<BlockPos> toBreak = new LinkedList<>();
 
@@ -96,11 +91,31 @@ public class BottleWithoutShip extends Item {
 
                                 if (world.getBlockState(pos).getBlock() != Blocks.AIR) {
                                     toBreak.add(pos);
+
+
                                 }
 
                             }
                         }
                     }
+
+                    for (BlockPos pos : toBreak) {
+
+                        Integer[] currentpos = {pos.getX(), pos.getY(), pos.getZ()};
+
+                        for (int i = 0; i < 3; i++) {
+                            if (maxShipCoords[i] < currentpos[i]) {
+                                maxShipCoords[i] = currentpos[i];
+                            }
+                            if (minShipCoords[i] > currentpos[i]) {
+                                minShipCoords[i] = currentpos[i];
+                            }
+                        }
+                    }
+
+                    System.out.println("Ship width: " + (maxShipCoords[0] - minShipCoords[0] + 1));
+                    System.out.println("Ship height: " + (maxShipCoords[1] - minShipCoords[1] + 1));
+                    System.out.println("Ship length: " + (maxShipCoords[2] - minShipCoords[2] + 1));
 
                     for (BlockPos pos : toBreak) {
                         if (world.getBlockState(pos).hasBlockEntity()) {
@@ -117,12 +132,12 @@ public class BottleWithoutShip extends Item {
                         }
                     }
                     world.playSound(
-                            null, // Player - if non-null, will play sound for every nearby player *except* the specified player
-                            blockPos, // The position of where the sound will come from
-                            SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK, // The sound that will play, in this case, the sound the anvil plays when it lands.
-                            SoundCategory.PLAYERS, // This determines which of the volume sliders affect this sound
-                            1f, //Volume multiplier, 1 is normal, 0.5 is half volume, etc
-                            1f // Pitch multiplier, 1 is normal, 0.5 is half pitch, etc
+                            null,
+                            blockPos,
+                            SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK,
+                            SoundCategory.PLAYERS,
+                            1f,
+                            1f
                     );
 
                 }
