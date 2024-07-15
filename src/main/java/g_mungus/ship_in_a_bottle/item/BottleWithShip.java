@@ -82,6 +82,8 @@ public class BottleWithShip extends Item {
                 blockState = world.getBlockState(blockPos);
                 if (blockState.getBlock() == Blocks.WATER && world.getBiome(blockPos).isIn(BiomeTags.IS_OCEAN)) {
 
+                    blockPos = new BlockPos(blockPos.withY(world.getSeaLevel()));
+
                     if (!world.isClient) {
                         world.playSound(
                                 null, // Player - if non-null, will play sound for every nearby player *except* the specified player
