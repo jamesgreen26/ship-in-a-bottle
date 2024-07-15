@@ -34,6 +34,8 @@ import org.valkyrienskies.physics_api.voxel.LodBlockBoundingBox;
 import org.valkyrienskies.physics_api.voxel.LodBlockBoundingBoxKt;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class BottleWithoutShip extends Item {
     public BottleWithoutShip(Item.Settings settings) {
@@ -82,29 +84,36 @@ public class BottleWithoutShip extends Item {
                 System.out.println("Length: " + length);
 
                 if (!world.isClient()) {
+
+                    ServerWorld serverWorld = (ServerWorld) world;
+                    List<BlockPos> toBreak = new LinkedList<>();
+
                     for (int i = minWorldPos.x; i <= maxWorldPos.x; i++) {
                         for (int j = minWorldPos.y; j <= maxWorldPos.y; j++) {
                             for (int k = minWorldPos.z; k <= maxWorldPos.z; k++) {
-//                                world.setBlockState(new BlockPos(i,j,k), Blocks.AIR.getDefaultState());
-                                BlockPos toBreak = new BlockPos(i, j, k);
-                                BlockState toBreakState = world.getBlockState(toBreak);
-                                if (toBreakState.hasBlockEntity()) {
-                                    BlockEntity blockEntity = world.getBlockEntity(toBreak);
 
-                                    // Check if the block entity is not null and has NBT data
-                                    if (blockEntity != null && blockEntity.getCachedState() != null) {
-                                        // Get the existing NBT tag compound
-                                        world.removeBlockEntity(toBreak);
-                                    }
+                                BlockPos pos = new BlockPos(i, j, k);
+
+                                if (world.getBlockState(pos).getBlock() != Blocks.AIR) {
+                                    toBreak.add(pos);
                                 }
-                                if (toBreakState.getBlock() != Blocks.AIR) {
-                                    ServerWorld serverWorld = (ServerWorld) world;
-                                    if (Math.random() > 0.7) {
-                                        serverWorld.spawnParticles(ParticleTypes.END_ROD, toBreak.getX(), toBreak.getY(), toBreak.getZ(), 1, 0, 0, 0, 0);
-                                    }
-                                }
-                                world.setBlockState(toBreak, Blocks.AIR.getDefaultState(), 0, 0);
+
                             }
+                        }
+                    }
+
+                    for (BlockPos pos : toBreak) {
+                        if (world.getBlockState(pos).hasBlockEntity()) {
+                            BlockEntity blockEntity = world.getBlockEntity(pos);
+                            if (blockEntity != null && blockEntity.getCachedState() != null) {
+                                world.removeBlockEntity(pos);
+                            }
+                        }
+
+                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 0, 0);
+
+                        if (Math.random() > 0.7) {
+                            serverWorld.spawnParticles(ParticleTypes.END_ROD, pos.getX(), pos.getY(), pos.getZ(), 1, 0, 0, 0, 0);
                         }
                     }
                     world.playSound(
