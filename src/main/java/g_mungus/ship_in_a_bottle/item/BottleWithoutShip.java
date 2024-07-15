@@ -2,6 +2,7 @@ package g_mungus.ship_in_a_bottle.item;
 
 import g_mungus.ship_in_a_bottle.ShipInABottle;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -9,6 +10,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -30,7 +35,7 @@ import org.valkyrienskies.physics_api.voxel.LodBlockBoundingBoxKt;
 import java.util.Collection;
 
 public class BottleWithoutShip extends Item {
-    public BottleWithoutShip (Item.Settings settings) {
+    public BottleWithoutShip(Item.Settings settings) {
         super(settings);
     }
 
@@ -51,7 +56,7 @@ public class BottleWithoutShip extends Item {
 
                 NbtCompound nbt = newItemStack.getOrCreateNbt();
                 assert ship != null;
-                nbt.putString("Ship", ship.getSlug()); // Example custom field
+                nbt.putString("Ship", ship.getSlug());
                 newItemStack.setNbt(nbt);
 
 
@@ -80,9 +85,9 @@ public class BottleWithoutShip extends Item {
                         for (int j = minWorldPos.y; j <= maxWorldPos.y; j++) {
                             for (int k = minWorldPos.z; k <= maxWorldPos.z; k++) {
 //                                world.setBlockState(new BlockPos(i,j,k), Blocks.AIR.getDefaultState());
-                                BlockPos toBreak = new BlockPos(i,j,k);
-
-                                if (world.getBlockState(toBreak).hasBlockEntity()) {
+                                BlockPos toBreak = new BlockPos(i, j, k);
+                                BlockState toBreakState = world.getBlockState(toBreak);
+                                if (toBreakState.hasBlockEntity()) {
                                     BlockEntity blockEntity = world.getBlockEntity(toBreak);
 
                                     // Check if the block entity is not null and has NBT data
@@ -91,13 +96,28 @@ public class BottleWithoutShip extends Item {
                                         world.removeBlockEntity(toBreak);
                                     }
                                 }
+                                if (toBreakState.getBlock() != Blocks.AIR) {
+                                    ServerWorld serverWorld = (ServerWorld) world;
+                                    if (Math.random() > 0.7) {
+                                        serverWorld.spawnParticles(ParticleTypes.END_ROD, toBreak.getX(), toBreak.getY(), toBreak.getZ(), 1, 0, 0, 0, 0);
+                                    }
+                                }
                                 world.setBlockState(toBreak, Blocks.AIR.getDefaultState(), 0, 0);
                             }
                         }
                     }
+                    world.playSound(
+                            null, // Player - if non-null, will play sound for every nearby player *except* the specified player
+                            blockPos, // The position of where the sound will come from
+                            SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK, // The sound that will play, in this case, the sound the anvil plays when it lands.
+                            SoundCategory.PLAYERS, // This determines which of the volume sliders affect this sound
+                            1f, //Volume multiplier, 1 is normal, 0.5 is half volume, etc
+                            1f // Pitch multiplier, 1 is normal, 0.5 is half pitch, etc
+                    );
+                    user.giveItemStack(newItemStack);
                 }
-
-                return TypedActionResult.success(newItemStack, world.isClient());
+                itemStack.decrement(1);
+                return TypedActionResult.success(itemStack, world.isClient());
             } else {
                 return TypedActionResult.pass(itemStack);
 

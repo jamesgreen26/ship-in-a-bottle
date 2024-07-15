@@ -74,8 +74,8 @@ public class BottleWithShip extends Item {
                         world.playSound(
                                 null, // Player - if non-null, will play sound for every nearby player *except* the specified player
                                 blockPos, // The position of where the sound will come from
-                                SoundEvents.ITEM_BUCKET_FILL, // The sound that will play, in this case, the sound the anvil plays when it lands.
-                                SoundCategory.BLOCKS, // This determines which of the volume sliders affect this sound
+                                SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON, // The sound that will play, in this case, the sound the anvil plays when it lands.
+                                SoundCategory.PLAYERS, // This determines which of the volume sliders affect this sound
                                 1f, //Volume multiplier, 1 is normal, 0.5 is half volume, etc
                                 1f // Pitch multiplier, 1 is normal, 0.5 is half pitch, etc
                         );
@@ -128,6 +128,7 @@ public class BottleWithShip extends Item {
 
 
                     }
+
                     return TypedActionResult.success(new ItemStack(ModItems.BOTTLEWITHOUTSHIP), world.isClient());
                 } else if (world.isClient()){
                     MinecraftClient mc = MinecraftClient.getInstance();
