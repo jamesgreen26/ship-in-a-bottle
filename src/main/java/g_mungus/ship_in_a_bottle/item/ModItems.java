@@ -18,7 +18,7 @@ import static g_mungus.ship_in_a_bottle.block.ModBlocks.SHIPASSEMBLER;
 
 
 public class ModItems {
-    public static final Item BOTTLEWITHOUTSHIP = registerItem("bottle_without_ship", new BottleWithoutShip(new Item.Settings().rarity(Rarity.UNCOMMON)));
+    public static final Item BOTTLEWITHOUTSHIP = registerItem("bottle_without_ship", new BottleWithoutShip(new Item.Settings().maxCount(1).rarity(Rarity.RARE)));
     public static final Item BOTTLEWITHSHIP = registerItem("bottle_with_ship", new BottleWithShip(new Item.Settings().maxCount(1).rarity(Rarity.RARE)));
 
 

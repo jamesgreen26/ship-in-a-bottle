@@ -9,6 +9,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -114,10 +115,9 @@ public class BottleWithoutShip extends Item {
                             1f, //Volume multiplier, 1 is normal, 0.5 is half volume, etc
                             1f // Pitch multiplier, 1 is normal, 0.5 is half pitch, etc
                     );
-                    user.giveItemStack(newItemStack);
+
                 }
-                itemStack.decrement(1);
-                return TypedActionResult.success(itemStack, world.isClient());
+                return TypedActionResult.success(newItemStack, world.isClient());
             } else {
                 return TypedActionResult.pass(itemStack);
 
