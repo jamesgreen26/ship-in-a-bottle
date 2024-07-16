@@ -10,7 +10,11 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -27,6 +31,9 @@ import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+
+import static g_mungus.ship_in_a_bottle.ShipInABottle.MOD_ID;
 
 public class BottleWithoutShip extends Item {
     public BottleWithoutShip(Item.Settings settings) {
@@ -36,7 +43,7 @@ public class BottleWithoutShip extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
 
-        BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
+        BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
         if (blockHitResult.getType() == HitResult.Type.MISS) {
             return TypedActionResult.pass(itemStack);
         } else if (blockHitResult.getType() != HitResult.Type.BLOCK) {
@@ -50,7 +57,8 @@ public class BottleWithoutShip extends Item {
 
                 NbtCompound nbt = newItemStack.getOrCreateNbt();
                 assert ship != null;
-                nbt.putString("Ship", ship.getSlug());
+                String shipName = ship.getSlug();
+                nbt.putString("Ship", shipName);
                 newItemStack.setNbt(nbt);
 
 
@@ -113,9 +121,31 @@ public class BottleWithoutShip extends Item {
                         }
                     }
 
-                    System.out.println("Ship width: " + (maxShipCoords[0] - minShipCoords[0] + 1));
-                    System.out.println("Ship height: " + (maxShipCoords[1] - minShipCoords[1] + 1));
-                    System.out.println("Ship length: " + (maxShipCoords[2] - minShipCoords[2] + 1));
+                    Vec3i shipSize = new Vec3i((maxShipCoords[0] - minShipCoords[0] + 1), (maxShipCoords[1] - minShipCoords[1] + 1), (maxShipCoords[2] - minShipCoords[2] + 1));
+
+                    System.out.println("Ship width: " + shipSize.getX());
+                    System.out.println("Ship height: " + shipSize.getY());
+                    System.out.println("Ship length: " + shipSize.getZ());
+
+                    //
+
+                    BlockPos structureStart = new BlockPos(minShipCoords[0], minShipCoords[1], minShipCoords[2]);
+
+                    StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
+
+                    StructureTemplate structureTemplate;
+                    Identifier structureID;
+                    try {
+                        structureID = new Identifier(MOD_ID, Objects.requireNonNullElse(shipName, "placeholder"));
+                        structureTemplate = structureTemplateManager.getTemplateOrBlank(structureID);
+
+                        structureTemplate.saveFromWorld(world, structureStart, shipSize, true, Blocks.AIR);
+                        structureTemplateManager.saveTemplate(structureID);
+                    } catch (InvalidIdentifierException var8) {
+                        return TypedActionResult.pass(itemStack);
+                    }
+
+                    //
 
                     for (BlockPos pos : toBreak) {
                         if (world.getBlockState(pos).hasBlockEntity()) {
