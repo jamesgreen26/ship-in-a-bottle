@@ -1,7 +1,9 @@
 package g_mungus.ship_in_a_bottle.item;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,6 +14,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -23,9 +26,14 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.joml.Vector3i;
+import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.api.ships.properties.IShipActiveChunksSet;
 import org.valkyrienskies.core.api.world.LevelYRange;
+import org.valkyrienskies.core.impl.game.ships.ShipObject;
+import org.valkyrienskies.core.impl.game.ships.ShipObjectServer;
+import org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld_Factory;
+import org.valkyrienskies.core.impl.game.ships.ShipObjectWorld;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.ArrayList;
@@ -52,130 +60,140 @@ public class BottleWithoutShip extends Item {
 
             BlockPos blockPos = blockHitResult.getBlockPos();
             if (VSGameUtilsKt.isBlockInShipyard(world, blockPos)) {
+
                 Ship ship = VSGameUtilsKt.getShipManagingPos(world, blockPos);
-                ItemStack newItemStack = new ItemStack(ModItems.BOTTLEWITHSHIP);
-
-                NbtCompound nbt = newItemStack.getOrCreateNbt();
-                assert ship != null;
-                String shipName = ship.getSlug();
-                nbt.putString("Ship", shipName);
-                newItemStack.setNbt(nbt);
 
 
-                IShipActiveChunksSet activeChunks = ship.getActiveChunksSet();
-                Vector3i minWorldPos = new Vector3i();
-                Vector3i maxWorldPos = new Vector3i();
+                if (user.experienceLevel >= 30 || user.isCreative()) {
 
-                int minY = world.getBottomY();
-                int maxY = world.getTopY();
-                maxY = (maxY / 16) * 16 - 1;
+                    ItemStack newItemStack = new ItemStack(ModItems.BOTTLEWITHSHIP);
 
-                LevelYRange yRange = new LevelYRange(minY, maxY);
-
-                activeChunks.getMinMaxWorldPos(minWorldPos, maxWorldPos, yRange);
-
-                int width = maxWorldPos.x - minWorldPos.x + 1;
-                int height = maxWorldPos.y - minWorldPos.y + 1;
-                int length = maxWorldPos.z - minWorldPos.z + 1;
-
-                System.out.println("Width: " + width);
-                System.out.println("Height: " + height);
-                System.out.println("Length: " + length);
-
-                if (!world.isClient()) {
-
-                    Integer[] maxShipCoords = {blockPos.getX(), blockPos.getY(), blockPos.getZ()};
-                    Integer[] minShipCoords = {blockPos.getX(), blockPos.getY(), blockPos.getZ()};
+                    NbtCompound nbt = newItemStack.getOrCreateNbt();
+                    assert ship != null;
+                    String shipName = ship.getSlug();
+                    nbt.putString("Ship", shipName);
+                    newItemStack.setNbt(nbt);
 
 
-                    ServerWorld serverWorld = (ServerWorld) world;
-                    List<BlockPos> toBreak = new LinkedList<>();
+                    IShipActiveChunksSet activeChunks = ship.getActiveChunksSet();
+                    Vector3i minWorldPos = new Vector3i();
+                    Vector3i maxWorldPos = new Vector3i();
 
-                    for (int i = minWorldPos.x; i <= maxWorldPos.x; i++) {
-                        for (int j = minWorldPos.y; j <= maxWorldPos.y; j++) {
-                            for (int k = minWorldPos.z; k <= maxWorldPos.z; k++) {
+                    int minY = world.getBottomY();
+                    int maxY = world.getTopY();
+                    maxY = (maxY / 16) * 16 - 1;
 
-                                BlockPos pos = new BlockPos(i, j, k);
+                    LevelYRange yRange = new LevelYRange(minY, maxY);
 
-                                if (world.getBlockState(pos).getBlock() != Blocks.AIR) {
-                                    toBreak.add(pos);
+                    activeChunks.getMinMaxWorldPos(minWorldPos, maxWorldPos, yRange);
 
+                    int width = maxWorldPos.x - minWorldPos.x + 1;
+                    int height = maxWorldPos.y - minWorldPos.y + 1;
+                    int length = maxWorldPos.z - minWorldPos.z + 1;
+
+                    System.out.println("Width: " + width);
+                    System.out.println("Height: " + height);
+                    System.out.println("Length: " + length);
+
+                    if (!world.isClient()) {
+
+                        Integer[] maxShipCoords = {blockPos.getX(), blockPos.getY(), blockPos.getZ()};
+                        Integer[] minShipCoords = {blockPos.getX(), blockPos.getY(), blockPos.getZ()};
+
+
+                        ServerWorld serverWorld = (ServerWorld) world;
+                        List<BlockPos> toBreak = new LinkedList<>();
+
+                        for (int i = minWorldPos.x; i <= maxWorldPos.x; i++) {
+                            for (int j = minWorldPos.y; j <= maxWorldPos.y; j++) {
+                                for (int k = minWorldPos.z; k <= maxWorldPos.z; k++) {
+
+                                    BlockPos pos = new BlockPos(i, j, k);
+
+                                    if (world.getBlockState(pos).getBlock() != Blocks.AIR) {
+                                        toBreak.add(pos);
+
+
+                                    }
 
                                 }
-
-                            }
-                        }
-                    }
-
-                    for (BlockPos pos : toBreak) {
-
-                        Integer[] currentpos = {pos.getX(), pos.getY(), pos.getZ()};
-
-                        for (int i = 0; i < 3; i++) {
-                            if (maxShipCoords[i] < currentpos[i]) {
-                                maxShipCoords[i] = currentpos[i];
-                            }
-                            if (minShipCoords[i] > currentpos[i]) {
-                                minShipCoords[i] = currentpos[i];
-                            }
-                        }
-                    }
-
-                    Vec3i shipSize = new Vec3i((maxShipCoords[0] - minShipCoords[0] + 1), (maxShipCoords[1] - minShipCoords[1] + 1), (maxShipCoords[2] - minShipCoords[2] + 1));
-
-                    System.out.println("Ship width: " + shipSize.getX());
-                    System.out.println("Ship height: " + shipSize.getY());
-                    System.out.println("Ship length: " + shipSize.getZ());
-
-                    //
-
-                    BlockPos structureStart = new BlockPos(minShipCoords[0], minShipCoords[1], minShipCoords[2]);
-
-                    StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
-
-                    StructureTemplate structureTemplate;
-                    Identifier structureID;
-                    try {
-                        structureID = new Identifier(MOD_ID, Objects.requireNonNullElse(shipName, "placeholder"));
-                        structureTemplate = structureTemplateManager.getTemplateOrBlank(structureID);
-
-                        structureTemplate.saveFromWorld(world, structureStart, shipSize, true, Blocks.AIR);
-                        structureTemplateManager.saveTemplate(structureID);
-                    } catch (InvalidIdentifierException var8) {
-                        return TypedActionResult.pass(itemStack);
-                    }
-
-                    //
-
-                    for (BlockPos pos : toBreak) {
-                        if (world.getBlockState(pos).hasBlockEntity()) {
-                            BlockEntity blockEntity = world.getBlockEntity(pos);
-                            if (blockEntity != null && blockEntity.getCachedState() != null) {
-                                world.removeBlockEntity(pos);
                             }
                         }
 
-                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 0, 0);
+                        for (BlockPos pos : toBreak) {
 
-                        if (Math.random() > 0.7) {
-                            serverWorld.spawnParticles(ParticleTypes.END_ROD, pos.getX(), pos.getY(), pos.getZ(), 1, 0, 0, 0, 0);
+                            Integer[] currentpos = {pos.getX(), pos.getY(), pos.getZ()};
+
+                            for (int i = 0; i < 3; i++) {
+                                if (maxShipCoords[i] < currentpos[i]) {
+                                    maxShipCoords[i] = currentpos[i];
+                                }
+                                if (minShipCoords[i] > currentpos[i]) {
+                                    minShipCoords[i] = currentpos[i];
+                                }
+                            }
                         }
-                    }
-                    world.playSound(
-                            null,
-                            blockPos,
-                            SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK,
-                            SoundCategory.PLAYERS,
-                            1f,
-                            1f
-                    );
 
+                        Vec3i shipSize = new Vec3i((maxShipCoords[0] - minShipCoords[0] + 1), (maxShipCoords[1] - minShipCoords[1] + 1), (maxShipCoords[2] - minShipCoords[2] + 1));
+
+                        System.out.println("Ship width: " + shipSize.getX());
+                        System.out.println("Ship height: " + shipSize.getY());
+                        System.out.println("Ship length: " + shipSize.getZ());
+
+                        //
+
+                        BlockPos structureStart = new BlockPos(minShipCoords[0], minShipCoords[1], minShipCoords[2]);
+
+                        StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
+
+                        StructureTemplate structureTemplate;
+                        Identifier structureID;
+                        try {
+                            structureID = new Identifier(MOD_ID, Objects.requireNonNullElse(shipName, "placeholder"));
+                            structureTemplate = structureTemplateManager.getTemplateOrBlank(structureID);
+
+                            structureTemplate.saveFromWorld(world, structureStart, shipSize, true, Blocks.AIR);
+                            structureTemplateManager.saveTemplate(structureID);
+                        } catch (InvalidIdentifierException var8) {
+                            return TypedActionResult.pass(itemStack);
+                        }
+
+                        //
+
+                        for (BlockPos pos : toBreak) {
+                            if (world.getBlockState(pos).hasBlockEntity()) {
+                                BlockEntity blockEntity = world.getBlockEntity(pos);
+                                if (blockEntity != null && blockEntity.getCachedState() != null) {
+                                    world.removeBlockEntity(pos);
+                                }
+                            }
+
+                            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 0, 0);
+
+                            if (Math.random() > 0.7) {
+                                serverWorld.spawnParticles(ParticleTypes.END_ROD, pos.getX(), pos.getY(), pos.getZ(), 1, 0, 0, 0, 0);
+                            }
+                        }
+                        world.playSound(
+                                null,
+                                blockPos,
+                                SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK,
+                                SoundCategory.PLAYERS,
+                                1f,
+                                1f
+                        );
+
+                    }
+                    if (!user.isCreative()) user.addExperienceLevels(-30);
+                    return TypedActionResult.success(newItemStack, world.isClient());
+                } else if (world.isClient()) {
+                    MinecraftClient mc = MinecraftClient.getInstance();
+                    mc.inGameHud.setOverlayMessage(Text.of("Not enough levels."), false);
                 }
-                return TypedActionResult.success(newItemStack, world.isClient());
-            } else {
-                return TypedActionResult.pass(itemStack);
-
             }
+            return TypedActionResult.pass(itemStack);
+
+
         }
     }
 }

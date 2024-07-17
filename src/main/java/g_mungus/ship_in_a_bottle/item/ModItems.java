@@ -22,9 +22,9 @@ public class ModItems {
     public static final Item BOTTLEWITHSHIP = registerItem("bottle_with_ship", new BottleWithShip(new Item.Settings().maxCount(1).rarity(Rarity.RARE)));
 
 
-//    private static void addItemsToCombatItemGroup(FabricItemGroupEntries entries) {
-//        entries.add(BOTTLEWITHOUTSHIP);
-//    }
+    private static void addItemsToToolItemGroup(FabricItemGroupEntries entries) {
+        entries.add(BOTTLEWITHOUTSHIP);
+    }
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(ShipInABottle.MOD_ID, name), item);
@@ -35,6 +35,6 @@ public class ModItems {
         Registry.register(Registries.ITEM,new Identifier("ship-in-a-bottle","ship_assembler"),new BlockItem(SHIPASSEMBLER,new Item.Settings()));
 
 
-        //ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(ModItems::addItemsToCombatItemGroup);
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(ModItems::addItemsToToolItemGroup);
     }
 }
