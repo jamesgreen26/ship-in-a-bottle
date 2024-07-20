@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "ship-in-a-bottle:block/water_block_util"
+    }
+  }
+}
