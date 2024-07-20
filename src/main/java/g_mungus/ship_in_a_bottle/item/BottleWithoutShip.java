@@ -1,11 +1,13 @@
 package g_mungus.ship_in_a_bottle.item;
 
-import com.mojang.authlib.GameProfile;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -15,54 +17,40 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.joml.Vector3i;
-import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.api.ships.properties.IShipActiveChunksSet;
 import org.valkyrienskies.core.api.world.LevelYRange;
-import org.valkyrienskies.core.impl.game.ships.ShipObject;
-import org.valkyrienskies.core.impl.game.ships.ShipObjectServer;
-import org.valkyrienskies.core.impl.game.ships.ShipObjectServerWorld_Factory;
-import org.valkyrienskies.core.impl.game.ships.ShipObjectWorld;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 import static g_mungus.ship_in_a_bottle.ShipInABottle.MOD_ID;
 
-public class BottleWithoutShip extends Item {
-    public BottleWithoutShip(Item.Settings settings) {
-        super(settings);
+public class BottleWithoutShip extends BlockItem {
+    public BottleWithoutShip(Block block, Item.Settings settings) {
+        super(block, settings);
     }
 
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
 
-        BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
-        if (blockHitResult.getType() == HitResult.Type.MISS) {
-            return TypedActionResult.pass(itemStack);
-        } else if (blockHitResult.getType() != HitResult.Type.BLOCK) {
-            return TypedActionResult.pass(itemStack);
-        } else {
-
-            BlockPos blockPos = blockHitResult.getBlockPos();
-            if (VSGameUtilsKt.isBlockInShipyard(world, blockPos)) {
+    @Override
+    public ActionResult place(ItemPlacementContext context) {
+        if (VSGameUtilsKt.isBlockInShipyard(context.getWorld(), context.getBlockPos()) && !Objects.requireNonNull(context.getPlayer()).isSneaking()) {
+            BlockPos blockPos = context.getBlockPos();
+            PlayerEntity user = context.getPlayer();
+            World world = context.getWorld();
 
                 Ship ship = VSGameUtilsKt.getShipManagingPos(world, blockPos);
 
+                if(Objects.isNull(user)) {
+                    return ActionResult.FAIL;
+                }
 
                 if (user.experienceLevel >= 30 || user.isCreative()) {
 
@@ -155,7 +143,7 @@ public class BottleWithoutShip extends Item {
                             structureTemplate.saveFromWorld(world, structureStart, shipSize, true, Blocks.AIR);
                             structureTemplateManager.saveTemplate(structureID);
                         } catch (InvalidIdentifierException var8) {
-                            return TypedActionResult.pass(itemStack);
+                            return ActionResult.FAIL;
                         }
 
                         //
@@ -185,15 +173,21 @@ public class BottleWithoutShip extends Item {
 
                     }
                     if (!user.isCreative()) user.addExperienceLevels(-30);
-                    return TypedActionResult.success(newItemStack, world.isClient());
+
+                    user.setStackInHand(context.getHand(), newItemStack);
+                    user.swingHand(context.getHand());
+                    return ActionResult.SUCCESS;
+
                 } else if (world.isClient()) {
                     MinecraftClient mc = MinecraftClient.getInstance();
                     mc.inGameHud.setOverlayMessage(Text.of("Not enough levels."), false);
                 }
-            }
-            return TypedActionResult.pass(itemStack);
 
 
+
+
+            return ActionResult.FAIL;
         }
+        return super.place(context);
     }
 }

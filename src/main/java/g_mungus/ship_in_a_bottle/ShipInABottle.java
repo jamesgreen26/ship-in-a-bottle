@@ -1,5 +1,6 @@
 package g_mungus.ship_in_a_bottle;
 
+import g_mungus.ship_in_a_bottle.block.ModBlocks;
 import g_mungus.ship_in_a_bottle.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
@@ -28,5 +29,6 @@ public class ShipInABottle implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 		ModItems.registerModItems();
+		ModBlocks.registerModBlocks();
 	}
 }
