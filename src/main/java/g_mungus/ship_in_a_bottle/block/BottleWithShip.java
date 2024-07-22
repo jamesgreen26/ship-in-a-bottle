@@ -118,7 +118,7 @@ public class BottleWithShip extends BlockWithEntity implements Waterloggable{
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockEntity be = world.getBlockEntity(pos);
-        if (be instanceof BottleWithShipEntity && !world.isClient()) {
+        if (be instanceof BottleWithShipEntity && !world.isClient() && !player.isCreative()) {
             dropStack(world, pos, ((BottleWithShipEntity) be).getItemStack());
         }
         super.onBreak(world, pos, state, player);
