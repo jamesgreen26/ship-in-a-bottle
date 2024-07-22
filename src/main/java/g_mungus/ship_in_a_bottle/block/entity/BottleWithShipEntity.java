@@ -14,15 +14,18 @@ import static net.minecraft.block.Block.dropStack;
 public class BottleWithShipEntity extends BlockEntity {
 
     private String shipName;
+    public final double randomRotation;
 
     public BottleWithShipEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.BOTTLEWITHSHIPENTITY, pos, state);
         shipName = "sloop";
+        randomRotation = Math.random();
     }
 
     public BottleWithShipEntity(BlockPos pos, BlockState state, String shipName) {
         super(ModBlocks.BOTTLEWITHSHIPENTITY, pos, state);
         this.shipName = shipName;
+        randomRotation = Math.random();
     }
 
     public ItemStack getItemStack() {
@@ -44,5 +47,7 @@ public class BottleWithShipEntity extends BlockEntity {
         super.writeNbt(nbt);
         nbt.putString("shipName", this.shipName);
     }
+
+
 
 }

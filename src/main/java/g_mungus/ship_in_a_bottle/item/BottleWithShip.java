@@ -1,13 +1,18 @@
 package g_mungus.ship_in_a_bottle.item;
 
+import g_mungus.ship_in_a_bottle.block.WaterBlock;
 import g_mungus.ship_in_a_bottle.util.StructurePlacer;
 import kotlin.jvm.internal.Intrinsics;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.WaterFluid;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -53,10 +58,11 @@ public class BottleWithShip extends BlockItem {
 
     @Override
     public ActionResult place(ItemPlacementContext context) {
-        return super.place(context);
+//        System.out.println("tried to place");
+//        return super.place(context);
+        return ActionResult.PASS;
     }
 
-    /*
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
@@ -64,6 +70,10 @@ public class BottleWithShip extends BlockItem {
             return TypedActionResult.pass(itemStack);
         } else if (blockHitResult.getType() != HitResult.Type.BLOCK) {
             return TypedActionResult.pass(itemStack);
+        } else if (!world.getBlockState(blockHitResult.getBlockPos()).isOf(Blocks.WATER) || user.isSneaking()) {
+            BlockHitResult blockHitResult2 = raycast(world, user, RaycastContext.FluidHandling.NONE);
+            super.place(new ItemPlacementContext(user, hand, itemStack,blockHitResult2));
+            return TypedActionResult.success(itemStack);
         } else {
             BlockPos blockPos = blockHitResult.getBlockPos();
             Direction direction = blockHitResult.getSide();
@@ -174,6 +184,6 @@ public class BottleWithShip extends BlockItem {
         return TypedActionResult.fail(itemStack);
     }
 
-     */
+
 
 }

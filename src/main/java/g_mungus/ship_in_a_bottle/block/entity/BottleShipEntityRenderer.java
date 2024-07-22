@@ -80,10 +80,10 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
         matrices.multiply(new Quaternionf(cos(Math.PI/-4), 0, sin(Math.PI/-4), 0));
         matrices.multiply(new Quaternionf(cos(rotation/-2), 0, sin(rotation/-2), 0));
 
-        double radiansPerEntity = toRadians(worldTime * 3);
-        matrices.translate(0,sin(radiansPerEntity)/24,0);
-        double rotationThing = (sin(PI/2 + radiansPerEntity) / 48);
-        matrices.multiply(new Quaternionf(cos(rotationThing), sin(rotationThing), 0, 0));
+        double radiansPerEntity = 1.25 * toRadians(worldTime * 3) + 2*PI*entity.randomRotation;
+        matrices.translate(0,sin(radiansPerEntity)/48,0);
+        double rotationValue = (sin(PI/2 + radiansPerEntity) / 64);
+        matrices.multiply(new Quaternionf(cos(rotationValue), sin(rotationValue), 0, 0));
         matrices.multiply(new Quaternionf(1, 0, 0, 0));
 
 
