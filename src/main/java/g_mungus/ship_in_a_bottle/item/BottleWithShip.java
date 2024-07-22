@@ -2,12 +2,15 @@ package g_mungus.ship_in_a_bottle.item;
 
 import g_mungus.ship_in_a_bottle.util.StructurePlacer;
 import kotlin.jvm.internal.Intrinsics;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -29,7 +32,7 @@ import org.valkyrienskies.mod.common.assembly.ShipAssemblyKt;
 import java.util.List;
 import java.util.Objects;
 
-public class BottleWithShip extends Item {
+public class BottleWithShip extends BlockItem {
 
 
     @Override
@@ -44,10 +47,16 @@ public class BottleWithShip extends Item {
     }
 
 
-    public BottleWithShip(Settings settings) {
-        super(settings);
+    public BottleWithShip(Block block, Settings settings) {
+        super(block, settings);
     }
 
+    @Override
+    public ActionResult place(ItemPlacementContext context) {
+        return super.place(context);
+    }
+
+    /*
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
@@ -164,5 +173,7 @@ public class BottleWithShip extends Item {
         }
         return TypedActionResult.fail(itemStack);
     }
+
+     */
 
 }

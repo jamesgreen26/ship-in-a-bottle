@@ -130,6 +130,18 @@ public class BottleWithoutShip extends BlockItem {
 
                         //
 
+
+                        /*
+
+                        int modelSize;
+                        int shipMaxDimension = Integer.max(Integer.max(shipSize.getX(), shipSize.getY()), shipSize.getZ());
+                        modelSize = Math.min(shipMaxDimension, 15);
+
+                        System.out.println("modelSize = " + modelSize);
+
+                        */
+
+
                         BlockPos structureStart = new BlockPos(minShipCoords[0], minShipCoords[1], minShipCoords[2]);
 
                         StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
@@ -142,13 +154,18 @@ public class BottleWithoutShip extends BlockItem {
 
                             structureTemplate.saveFromWorld(world, structureStart, shipSize, true, Blocks.AIR);
                             structureTemplateManager.saveTemplate(structureID);
+
+//                            if (shipMaxDimension < 16) {
+//                                structureTemplateManager.saveTemplate(new Identifier(MOD_ID, Objects.requireNonNullElse(shipName, "placeholder") + "-rendermodel"));
+//                            }
                         } catch (InvalidIdentifierException var8) {
                             return ActionResult.FAIL;
                         }
 
-                        //
+
 
                         for (BlockPos pos : toBreak) {
+
                             if (world.getBlockState(pos).hasBlockEntity()) {
                                 BlockEntity blockEntity = world.getBlockEntity(pos);
                                 if (blockEntity != null && blockEntity.getCachedState() != null) {

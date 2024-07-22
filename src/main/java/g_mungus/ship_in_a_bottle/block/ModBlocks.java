@@ -5,13 +5,20 @@ import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.enums.Attachment;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 
 import static g_mungus.ship_in_a_bottle.ShipInABottle.MOD_ID;
 
 public class ModBlocks {
+    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+
     public static final Block SHIPASSEMBLER = registerBlock("ship_assembler", new ShipAssembler(AbstractBlock.Settings.create()));
     public static final Block BOTTLEWITHOUTSHIP = registerBlock("bottle_without_ship", new BottleWithoutShip(FabricBlockSettings.create().drops(new Identifier(MOD_ID, "blocks/bottle_without_ship")).nonOpaque().hardness(0.8f)));
     public static final Block BOTTLEWITHSHIP = registerBlock("bottle_with_ship", new BottleWithShip(FabricBlockSettings.create().nonOpaque().hardness(0.8f)));

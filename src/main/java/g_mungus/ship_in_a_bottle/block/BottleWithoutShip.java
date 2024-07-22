@@ -18,6 +18,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
+import static g_mungus.ship_in_a_bottle.block.ModBlocks.WATERLOGGED;
+
 public class BottleWithoutShip extends Block implements Waterloggable{
 
     public BottleWithoutShip(AbstractBlock.Settings settings) {
@@ -29,7 +31,6 @@ public class BottleWithoutShip extends Block implements Waterloggable{
 
 
 
-    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
     protected static final VoxelShape SHAPE_X = Block.createCuboidShape(0.0, 0.0, 2.0, 16.0, 12.0, 14.0);
     protected static final VoxelShape SHAPE_Z = Block.createCuboidShape(2.0, 0.0, 0.0, 14.0, 12.0, 16.0);

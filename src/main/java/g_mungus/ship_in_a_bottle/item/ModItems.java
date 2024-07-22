@@ -20,8 +20,8 @@ import static g_mungus.ship_in_a_bottle.block.ModBlocks.SHIPASSEMBLER;
 
 public class ModItems {
     public static final Item BOTTLEWITHOUTSHIP = registerItem("bottle_without_ship", new BottleWithoutShip(ModBlocks.BOTTLEWITHOUTSHIP, new Item.Settings().maxCount(1).rarity(Rarity.RARE)));
-    public static final Item BOTTLEWITHSHIP = registerItem("bottle_with_ship", new BottleWithShip(new Item.Settings().maxCount(1).rarity(Rarity.RARE)));
-
+    public static final Item BOTTLEWITHSHIP = registerItem("bottle_with_ship", new BottleWithShip(ModBlocks.BOTTLEWITHSHIP, new Item.Settings().maxCount(1).rarity(Rarity.RARE)));
+    public static final Item SHIPMODEL = registerItem("ship_model", new Item(new Item.Settings()));
 
     private static void addItemsToToolItemGroup(FabricItemGroupEntries entries) {
         entries.add(BOTTLEWITHOUTSHIP);
