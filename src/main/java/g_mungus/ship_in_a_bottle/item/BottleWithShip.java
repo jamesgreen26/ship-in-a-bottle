@@ -72,6 +72,7 @@ public class BottleWithShip extends BlockItem {
             return TypedActionResult.pass(itemStack);
         } else if (!world.getBlockState(blockHitResult.getBlockPos()).isOf(Blocks.WATER) || user.isSneaking()) {
             BlockHitResult blockHitResult2 = raycast(world, user, RaycastContext.FluidHandling.NONE);
+            if (blockHitResult2.getType() != HitResult.Type.BLOCK) return TypedActionResult.pass(itemStack);
             super.place(new ItemPlacementContext(user, hand, itemStack,blockHitResult2));
             return TypedActionResult.success(itemStack);
         } else {
