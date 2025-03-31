@@ -1,32 +1,30 @@
-package g_mungus.ship_in_a_bottle.block.entity;
+package g_mungus.ship_in_a_bottle.client;
 
+import com.mojang.brigadier.StringReader;
 import g_mungus.ship_in_a_bottle.block.ModBlocks;
-import g_mungus.ship_in_a_bottle.item.ModItems;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.state.property.Properties;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.joml.Quaternionf;
 
 import java.util.Objects;
 
 import static java.lang.Math.*;
+import static net.minecraft.command.argument.BlockArgumentParser.INVALID_BLOCK_ID_EXCEPTION;
 
 
 public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithShipEntity> {
@@ -87,10 +85,16 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
         matrices.multiply(new Quaternionf(1, 0, 0, 0));
 
 
-        itemRenderer.renderItem(new ItemStack(ModItems.SHIPMODEL), ModelTransformationMode.GUI, light, overlay, matrices, vertexConsumers, MinecraftClient.getInstance().world, 1);
+        //itemRenderer.renderItem(new ItemStack(ModItems.SHIPMODEL), ModelTransformationMode.GUI, light, overlay, matrices, vertexConsumers, MinecraftClient.getInstance().world, 1);
+
+
+        try {
+            StringReader reader = new StringReader(ShipInABottleClient.shipDisplayData.get(((BottleWithShipEntity) entity).getShipName()).get(0).id);
+            Identifier id = Identifier.fromCommandInput(reader);
+            Block block = (Block)((RegistryEntry.Reference<?>) Registries.BLOCK.getReadOnlyWrapper().getOptional(RegistryKey.of(RegistryKeys.BLOCK, id)).orElseThrow(() -> INVALID_BLOCK_ID_EXCEPTION.createWithContext(reader, id.toString()))).value();
+            blockRenderManager.renderBlockAsEntity(block.getDefaultState(),  matrices, vertexConsumers, light, overlay);
+        } catch (Exception e) {}
 
         matrices.pop();
-
-
     }
 }

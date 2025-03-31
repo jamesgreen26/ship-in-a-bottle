@@ -3,16 +3,9 @@ package g_mungus.ship_in_a_bottle;
 import g_mungus.ship_in_a_bottle.block.ModBlocks;
 import g_mungus.ship_in_a_bottle.item.ModItems;
 import net.fabricmc.api.ModInitializer;
-
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static g_mungus.ship_in_a_bottle.block.ModBlocks.SHIPASSEMBLER;
 
 public class ShipInABottle implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -20,6 +13,7 @@ public class ShipInABottle implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final String MOD_ID = "ship-in-a-bottle";
     public static final Logger LOGGER = LoggerFactory.getLogger("ship-in-a-bottle");
+	public static final Identifier SHIP_PACKET_ID = new Identifier(MOD_ID, "ship-packet");
 
 	@Override
 	public void onInitialize() {

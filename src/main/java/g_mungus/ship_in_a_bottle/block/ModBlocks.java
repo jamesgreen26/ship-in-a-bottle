@@ -1,16 +1,15 @@
 package g_mungus.ship_in_a_bottle.block;
 
 import g_mungus.ship_in_a_bottle.ShipInABottle;
-import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipEntity;
+import g_mungus.ship_in_a_bottle.block.entity.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.Attachment;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 
