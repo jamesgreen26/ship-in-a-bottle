@@ -5,7 +5,10 @@ import g_mungus.ship_in_a_bottle.block.ModBlocks;
 import g_mungus.ship_in_a_bottle.util.DisplayableShipData;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 
@@ -46,6 +49,10 @@ public class ShipInABottleClient implements ClientModInitializer {
                     e.printStackTrace();
                 }
             });
+        });
+
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            shipDisplayData.clear();
         });
     }
 }
