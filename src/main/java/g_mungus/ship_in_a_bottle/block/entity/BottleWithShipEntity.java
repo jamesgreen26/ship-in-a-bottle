@@ -7,6 +7,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
 public class BottleWithShipEntity extends BlockEntity {
 
@@ -25,6 +26,7 @@ public class BottleWithShipEntity extends BlockEntity {
         super(ModBlocks.BOTTLEWITHSHIPENTITY, pos, state);
         this.shipName = shipName;
         randomRotation = Math.random();
+        markDirty();
     }
 
     public ItemStack getItemStack() {
@@ -45,5 +47,16 @@ public class BottleWithShipEntity extends BlockEntity {
     public void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putString("shipName", this.shipName);
+    }
+
+    @Override
+    @Nullable
+    public Object getRenderData() {
+        return this.shipName;
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        return createNbt();
     }
 }
