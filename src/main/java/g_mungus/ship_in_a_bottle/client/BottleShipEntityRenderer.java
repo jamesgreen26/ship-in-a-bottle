@@ -98,10 +98,6 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
             DisplayableShipData data = ShipInABottleClient.shipDisplayData.get(((BottleWithShipEntity) entity).getShipName());
             if (data != null) {
                 for (DisplayableShipData.BlockInfo entry : data.data) {
-                    StringReader reader = new StringReader(entry.id);
-                    Identifier id = Identifier.fromCommandInput(reader);
-                    Block block = (Block) ((RegistryEntry.Reference<?>) Registries.BLOCK.getReadOnlyWrapper().getOptional(RegistryKey.of(RegistryKeys.BLOCK, id)).orElseThrow(() -> INVALID_BLOCK_ID_EXCEPTION.createWithContext(reader, id.toString()))).value();
-
 
                     matrices.translate(entry.x, entry.y, entry.z);
                     blockRenderManager.renderBlockAsEntity(Block.getStateFromRawId(entry.stateId), matrices, vertexConsumers, light, overlay);

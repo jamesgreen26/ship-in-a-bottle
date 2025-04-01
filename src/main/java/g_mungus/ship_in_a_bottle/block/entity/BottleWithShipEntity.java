@@ -13,7 +13,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
@@ -64,15 +63,9 @@ public class BottleWithShipEntity extends BlockEntity {
 
                 beans.forEach(it -> {
                     it.getAll().forEach(structureBlockInfo -> {
-                        data.data.add(
-                                new DisplayableShipData.BlockInfo(structureBlockInfo.pos(),
-                                        Registries.BLOCK.getId(structureBlockInfo.state().getBlock()),
-                                        structureBlockInfo.state().toString(),
-                                Block.getRawIdFromState(structureBlockInfo.state())
-                                )
-                        );
+                        data.data.add(new DisplayableShipData.BlockInfo(structureBlockInfo.pos(), Block.getRawIdFromState(structureBlockInfo.state())));
                         i.getAndIncrement();
-                        if (i.get() >= 80) {
+                        if (i.get() >= 120) {
                             try {
                                 String ser = DisplayableShipData.serialize(data);
                                 outputs.add(ser);
@@ -84,7 +77,14 @@ public class BottleWithShipEntity extends BlockEntity {
                         }
                     });
                 });
-
+                if (i.get() != 0) {
+                    try {
+                        String ser = DisplayableShipData.serialize(data);
+                        outputs.add(ser);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 for (String output : outputs) {
                     PacketByteBuf buf = PacketByteBufs.create();

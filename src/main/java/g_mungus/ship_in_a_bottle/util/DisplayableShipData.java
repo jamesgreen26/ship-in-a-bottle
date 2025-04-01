@@ -1,6 +1,5 @@
 package g_mungus.ship_in_a_bottle.util;
 
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 import java.io.*;
@@ -21,21 +20,18 @@ public class DisplayableShipData implements Serializable {
         public final int x;
         public final int y;
         public final int z;
-        public final String id;
-        public final String state;
+
         public final int stateId;
 
-        public BlockInfo(int x, int y, int z, String id, String state, int stateId) {
+        public BlockInfo(int x, int y, int z, int stateId) {
             this.x = x;
             this.y = y;
             this.z = z;
-            this.id = id;
-            this.state = state;
             this.stateId = stateId;
         }
 
-        public BlockInfo(BlockPos pos, Identifier id, String state, int stateId) {
-            this(pos.getX(), pos.getY(), pos.getZ(), id.toString(), state, stateId);
+        public BlockInfo(BlockPos pos, int stateId) {
+            this(pos.getX(), pos.getY(), pos.getZ(), stateId);
         }
     }
 
