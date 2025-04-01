@@ -7,6 +7,7 @@ import g_mungus.ship_in_a_bottle.util.BlockInfoListProvider;
 import g_mungus.ship_in_a_bottle.util.DisplayableShipData;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
@@ -63,14 +64,15 @@ public class BottleWithShipEntity extends BlockEntity {
 
                 beans.forEach(it -> {
                     it.getAll().forEach(structureBlockInfo -> {
-                        if (i.get() < 80) {
-                            data.data.add(
-                                    new DisplayableShipData.BlockInfo(structureBlockInfo.pos(),
-                                            Registries.BLOCK.getId(structureBlockInfo.state().getBlock()),
-                                            structureBlockInfo.state().toString())
-                            );
-                            i.getAndIncrement();
-                        } else {
+                        data.data.add(
+                                new DisplayableShipData.BlockInfo(structureBlockInfo.pos(),
+                                        Registries.BLOCK.getId(structureBlockInfo.state().getBlock()),
+                                        structureBlockInfo.state().toString(),
+                                Block.getRawIdFromState(structureBlockInfo.state())
+                                )
+                        );
+                        i.getAndIncrement();
+                        if (i.get() >= 80) {
                             try {
                                 String ser = DisplayableShipData.serialize(data);
                                 outputs.add(ser);

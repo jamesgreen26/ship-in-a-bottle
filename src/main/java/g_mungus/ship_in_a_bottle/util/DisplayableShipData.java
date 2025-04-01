@@ -23,17 +23,19 @@ public class DisplayableShipData implements Serializable {
         public final int z;
         public final String id;
         public final String state;
+        public final int stateId;
 
-        public BlockInfo(int x, int y, int z, String id, String state) {
+        public BlockInfo(int x, int y, int z, String id, String state, int stateId) {
             this.x = x;
             this.y = y;
             this.z = z;
             this.id = id;
             this.state = state;
+            this.stateId = stateId;
         }
 
-        public BlockInfo(BlockPos pos, Identifier id, String state) {
-            this(pos.getX(), pos.getY(), pos.getZ(), id.toString(), state);
+        public BlockInfo(BlockPos pos, Identifier id, String state, int stateId) {
+            this(pos.getX(), pos.getY(), pos.getZ(), id.toString(), state, stateId);
         }
     }
 

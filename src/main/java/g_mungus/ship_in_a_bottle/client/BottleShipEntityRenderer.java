@@ -18,6 +18,8 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.joml.Quaternionf;
@@ -84,12 +86,14 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
         matrices.translate(0,sin(radiansPerEntity)/48,0);
         double rotationValue = (sin(PI/2 + radiansPerEntity) / 64);
         matrices.multiply(new Quaternionf(cos(rotationValue), sin(rotationValue), 0, 0));
-        matrices.multiply(new Quaternionf(1, 0, 0, 0));
+        //matrices.multiply(new Quaternionf(1, 0, 0, 0));
 
 
         //itemRenderer.renderItem(new ItemStack(ModItems.SHIPMODEL), ModelTransformationMode.GUI, light, overlay, matrices, vertexConsumers, MinecraftClient.getInstance().world, 1);
 
-        matrices.scale(0.2f, 0.2f, 0.2f);
+        matrices.scale(0.03f, 0.03f, 0.03f);
+        matrices.multiply(new Quaternionf(sqrt(2)/2, 0f, sqrt(2)/2, 0));
+        matrices.translate(-5, -17, -15);
         try {
             DisplayableShipData data = ShipInABottleClient.shipDisplayData.get(((BottleWithShipEntity) entity).getShipName());
             if (data != null) {
@@ -97,8 +101,10 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
                     StringReader reader = new StringReader(entry.id);
                     Identifier id = Identifier.fromCommandInput(reader);
                     Block block = (Block) ((RegistryEntry.Reference<?>) Registries.BLOCK.getReadOnlyWrapper().getOptional(RegistryKey.of(RegistryKeys.BLOCK, id)).orElseThrow(() -> INVALID_BLOCK_ID_EXCEPTION.createWithContext(reader, id.toString()))).value();
+
+
                     matrices.translate(entry.x, entry.y, entry.z);
-                    blockRenderManager.renderBlockAsEntity(block.getDefaultState(), matrices, vertexConsumers, light, overlay);
+                    blockRenderManager.renderBlockAsEntity(Block.getStateFromRawId(entry.stateId), matrices, vertexConsumers, light, overlay);
                     matrices.translate(-entry.x, -entry.y, -entry.z);
                 }
             }
