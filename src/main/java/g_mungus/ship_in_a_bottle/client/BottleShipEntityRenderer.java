@@ -76,18 +76,18 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
         matrices.translate(0,sin(radiansPerEntity)/48,0);
         double rotationValue = (sin(PI/2 + radiansPerEntity) / 64);
         matrices.multiply(new Quaternionf(cos(rotationValue), sin(rotationValue), 0, 0));
-        //matrices.multiply(new Quaternionf(1, 0, 0, 0));
-
 
         //itemRenderer.renderItem(new ItemStack(ModItems.SHIPMODEL), ModelTransformationMode.GUI, light, overlay, matrices, vertexConsumers, MinecraftClient.getInstance().world, 1);
-
-
-        matrices.multiply(new Quaternionf(sqrt(2)/2, 0f, sqrt(2)/2, 0));
-
 
         try {
             DisplayableShipData data = ShipInABottleClient.shipDisplayData.get((entity.getShipName()));
             if (data != null) {
+
+                if (data.sizeX >= data.sizeZ) {
+                    matrices.multiply(new Quaternionf(1, 0, 0, 0));
+                } else {
+                    matrices.multiply(new Quaternionf(sqrt(2)/2, 0f, sqrt(2)/2, 0));
+                }
 
                 int largestLength = max(data.sizeX, max(data.sizeY, data.sizeZ));
                 matrices.scale((float) (1.0 / largestLength), (float) (1.0 / largestLength), (float) (1.0 / largestLength));

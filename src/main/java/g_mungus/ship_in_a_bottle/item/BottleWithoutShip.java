@@ -3,7 +3,6 @@ package g_mungus.ship_in_a_bottle.item;
 import g_mungus.ship_in_a_bottle.ShipInABottle;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -18,11 +17,14 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.text.Text;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import org.joml.Vector3i;
+import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.api.ships.properties.IShipActiveChunksSet;
 import org.valkyrienskies.core.api.world.LevelYRange;
@@ -167,15 +169,6 @@ public class BottleWithoutShip extends BlockItem {
 
                         for (BlockPos pos : toBreak) {
 
-                            if (world.getBlockState(pos).hasBlockEntity()) {
-                                BlockEntity blockEntity = world.getBlockEntity(pos);
-                                if (blockEntity != null && blockEntity.getCachedState() != null) {
-                                    world.removeBlockEntity(pos);
-                                }
-                            }
-
-                            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 0, 0);
-
                             if (Math.random() > 0.7) {
                                 serverWorld.spawnParticles(ParticleTypes.END_ROD, pos.getX(), pos.getY(), pos.getZ(), 1, 0, 0, 0, 0);
                             }
@@ -188,6 +181,8 @@ public class BottleWithoutShip extends BlockItem {
                                 1f,
                                 1f
                         );
+
+                        VSGameUtilsKt.getShipObjectWorld((ServerWorld) world).deleteShip((ServerShip) ship);
 
                         ShipInABottle.updateClientShipData(world.getServer(), shipName, world.getServer().getPlayerManager().getPlayerList());
                     }
