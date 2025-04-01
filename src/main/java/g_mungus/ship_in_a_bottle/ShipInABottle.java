@@ -42,9 +42,9 @@ public class ShipInABottle implements ModInitializer {
 
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            server.getResourceManager().findAllResources("structures", identifier -> Objects.equals(identifier.getNamespace(), MOD_ID)).forEach((identifier, resources) -> {
-                List<String> id = Arrays.stream(identifier.toString().split("/")).toList();
-                String shipName = id.get(id.size() - 1).replace(".nbt", "");
+            server.getOverworld().getStructureTemplateManager().streamTemplates().filter(identifier -> Objects.equals(identifier.getNamespace(), MOD_ID)).forEach(identifier -> {
+                LOGGER.info("Found ship: {}", identifier);
+                String shipName = identifier.toString().replace(MOD_ID + ":", "");
 
                 List<ServerPlayerEntity> players = new ArrayList<>();
                 players.add(handler.player);
