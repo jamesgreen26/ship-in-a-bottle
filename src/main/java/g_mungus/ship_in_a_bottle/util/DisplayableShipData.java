@@ -11,9 +11,17 @@ public class DisplayableShipData implements Serializable {
     public String shipName;
     public final Long updated;
 
-    public DisplayableShipData(String shipName, Long updated) {
+    public final int sizeX;
+    public final int sizeY;
+    public final int sizeZ;
+
+
+    public DisplayableShipData(String shipName, Long updated, int sizeX, int sizeY, int sizeZ) {
         this.shipName = shipName;
         this.updated = updated;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.sizeZ = sizeZ;
     }
 
     public static class BlockInfo implements Serializable {

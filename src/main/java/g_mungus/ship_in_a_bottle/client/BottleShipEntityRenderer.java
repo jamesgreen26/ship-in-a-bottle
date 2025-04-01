@@ -1,8 +1,7 @@
 package g_mungus.ship_in_a_bottle.client;
 
-import com.mojang.brigadier.StringReader;
 import g_mungus.ship_in_a_bottle.block.ModBlocks;
-import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipEntity;
+import g_mungus.ship_in_a_bottle.block.entity.*;
 import g_mungus.ship_in_a_bottle.util.DisplayableShipData;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -84,10 +83,15 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
 
         matrices.scale(0.03f, 0.03f, 0.03f);
         matrices.multiply(new Quaternionf(sqrt(2)/2, 0f, sqrt(2)/2, 0));
-        matrices.translate(-5, -17, -15);
+
+
         try {
-            DisplayableShipData data = ShipInABottleClient.shipDisplayData.get(((BottleWithShipEntity) entity).getShipName());
+            DisplayableShipData data = ShipInABottleClient.shipDisplayData.get((entity.getShipName()));
             if (data != null) {
+
+                matrices.translate(data.sizeX / -2.0, data.sizeY / -2.0, data.sizeZ / -2.0);
+                matrices.translate(0, data.sizeY / -12.0, 0);
+
                 for (DisplayableShipData.BlockInfo entry : data.data) {
 
                     matrices.translate(entry.x, entry.y, entry.z);

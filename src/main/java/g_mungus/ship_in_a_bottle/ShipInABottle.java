@@ -68,7 +68,13 @@ public class ShipInABottle implements ModInitializer {
         StructureTemplate template = manager.getTemplate(new Identifier(ShipInABottle.MOD_ID, shipName)).get();
         List<StructureTemplate.PalettedBlockInfoList> beans = ((BlockInfoListProvider) template).ship_in_a_bottle$getBlockInfoList();
 
-        DisplayableShipData data = new DisplayableShipData(shipName, Calendar.getInstance().getTimeInMillis());
+        DisplayableShipData data = new DisplayableShipData(
+                shipName,
+                Calendar.getInstance().getTimeInMillis(),
+                template.getSize().getX(),
+                template.getSize().getY(),
+                template.getSize().getZ()
+        );
 
         AtomicInteger i = new AtomicInteger();
 
