@@ -81,13 +81,17 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
 
         //itemRenderer.renderItem(new ItemStack(ModItems.SHIPMODEL), ModelTransformationMode.GUI, light, overlay, matrices, vertexConsumers, MinecraftClient.getInstance().world, 1);
 
-        matrices.scale(0.03f, 0.03f, 0.03f);
+
         matrices.multiply(new Quaternionf(sqrt(2)/2, 0f, sqrt(2)/2, 0));
 
 
         try {
             DisplayableShipData data = ShipInABottleClient.shipDisplayData.get((entity.getShipName()));
             if (data != null) {
+
+                int largestLength = max(data.sizeX, max(data.sizeY, data.sizeZ));
+                matrices.scale((float) (1.0 / largestLength), (float) (1.0 / largestLength), (float) (1.0 / largestLength));
+
 
                 matrices.translate(data.sizeX / -2.0, data.sizeY / -2.0, data.sizeZ / -2.0);
                 matrices.translate(0, data.sizeY / -12.0, 0);
