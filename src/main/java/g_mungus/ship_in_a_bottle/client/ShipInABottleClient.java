@@ -9,12 +9,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShipInABottleClient implements ClientModInitializer {
 
-    public static final ConcurrentHashMap<String, List<DisplayableShipData.BlockInfo>> shipDisplayData = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, DisplayableShipData> shipDisplayData = new ConcurrentHashMap<>();
 
     @Override
     public void onInitializeClient() {
@@ -28,10 +28,20 @@ public class ShipInABottleClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(ShipInABottle.SHIP_PACKET_ID, (client, handler, buf, responseSender) -> {
             String bytes = buf.readString();
 
+
+
             client.execute(() -> {
                 try {
                     DisplayableShipData data = DisplayableShipData.deserialize(bytes);
-                    shipDisplayData.put(data.shipName, data.data);
+                    if (shipDisplayData.get(data.shipName) == null || !Objects.equals(shipDisplayData.get(data.shipName).updated, data.updated)) {
+                        System.out.println("creating new ship");
+                        shipDisplayData.put(data.shipName, data);
+                    } else {
+                        System.out.println("adding " + data.data.size() + " elements to existing ship");
+                        shipDisplayData.get(data.shipName).data.addAll(data.data);
+                    }
+
+                    System.out.println("received. New ship size: " + shipDisplayData.get(data.shipName).data.size() + "Packet timestamp: " + data.updated);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

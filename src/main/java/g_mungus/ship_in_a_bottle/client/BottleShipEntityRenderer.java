@@ -3,6 +3,7 @@ package g_mungus.ship_in_a_bottle.client;
 import com.mojang.brigadier.StringReader;
 import g_mungus.ship_in_a_bottle.block.ModBlocks;
 import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipEntity;
+import g_mungus.ship_in_a_bottle.util.DisplayableShipData;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FurnaceBlock;
@@ -21,6 +22,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import org.joml.Quaternionf;
 
+import java.util.List;
 import java.util.Objects;
 
 import static java.lang.Math.*;
@@ -87,13 +89,23 @@ public class BottleShipEntityRenderer implements BlockEntityRenderer<BottleWithS
 
         //itemRenderer.renderItem(new ItemStack(ModItems.SHIPMODEL), ModelTransformationMode.GUI, light, overlay, matrices, vertexConsumers, MinecraftClient.getInstance().world, 1);
 
-
+        matrices.scale(0.2f, 0.2f, 0.2f);
         try {
-            StringReader reader = new StringReader(ShipInABottleClient.shipDisplayData.get(((BottleWithShipEntity) entity).getShipName()).get(0).id);
-            Identifier id = Identifier.fromCommandInput(reader);
-            Block block = (Block)((RegistryEntry.Reference<?>) Registries.BLOCK.getReadOnlyWrapper().getOptional(RegistryKey.of(RegistryKeys.BLOCK, id)).orElseThrow(() -> INVALID_BLOCK_ID_EXCEPTION.createWithContext(reader, id.toString()))).value();
-            blockRenderManager.renderBlockAsEntity(block.getDefaultState(),  matrices, vertexConsumers, light, overlay);
-        } catch (Exception e) {}
+            DisplayableShipData data = ShipInABottleClient.shipDisplayData.get(((BottleWithShipEntity) entity).getShipName());
+            if (data != null) {
+                for (DisplayableShipData.BlockInfo entry : data.data) {
+                    StringReader reader = new StringReader(entry.id);
+                    Identifier id = Identifier.fromCommandInput(reader);
+                    Block block = (Block) ((RegistryEntry.Reference<?>) Registries.BLOCK.getReadOnlyWrapper().getOptional(RegistryKey.of(RegistryKeys.BLOCK, id)).orElseThrow(() -> INVALID_BLOCK_ID_EXCEPTION.createWithContext(reader, id.toString()))).value();
+                    matrices.translate(entry.x, entry.y, entry.z);
+                    blockRenderManager.renderBlockAsEntity(block.getDefaultState(), matrices, vertexConsumers, light, overlay);
+                    matrices.translate(-entry.x, -entry.y, -entry.z);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         matrices.pop();
     }

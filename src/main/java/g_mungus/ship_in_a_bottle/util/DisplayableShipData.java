@@ -10,9 +10,11 @@ import java.util.List;
 public class DisplayableShipData implements Serializable {
     public List<BlockInfo> data = new ArrayList<>();
     public String shipName;
+    public final Long updated;
 
-    public DisplayableShipData(String shipName) {
+    public DisplayableShipData(String shipName, Long updated) {
         this.shipName = shipName;
+        this.updated = updated;
     }
 
     public static class BlockInfo implements Serializable {

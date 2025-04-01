@@ -21,6 +21,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,32 +55,49 @@ public class BottleWithShipEntity extends BlockEntity {
                 List<StructureTemplate.PalettedBlockInfoList> beans = ((BlockInfoListProvider) template).ship_in_a_bottle$getBlockInfoList();
 
 
-                DisplayableShipData data = new DisplayableShipData(shipName);
+                DisplayableShipData data = new DisplayableShipData(shipName, Calendar.getInstance().getTimeInMillis());
 
                 AtomicInteger i  = new AtomicInteger();
 
+                List<String> outputs = new ArrayList<>();
+
                 beans.forEach(it -> {
                     it.getAll().forEach(structureBlockInfo -> {
-                        if (i.get() < 50) {
+                        if (i.get() < 80) {
                             data.data.add(
                                     new DisplayableShipData.BlockInfo(structureBlockInfo.pos(),
                                             Registries.BLOCK.getId(structureBlockInfo.state().getBlock()),
                                             structureBlockInfo.state().toString())
                             );
                             i.getAndIncrement();
+                        } else {
+                            try {
+                                String ser = DisplayableShipData.serialize(data);
+                                outputs.add(ser);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            data.data.clear();
+                            i.set(0);
                         }
                     });
                 });
 
-                PacketByteBuf buf1 = PacketByteBufs.create();
-                buf1.writeString(DisplayableShipData.serialize(data));
 
-                world.getServer().getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> {
-                    if (serverPlayerEntity.getServerWorld().getDimensionKey() == DimensionTypes.OVERWORLD) {
-                        ServerPlayNetworking.send(serverPlayerEntity, ShipInABottle.SHIP_PACKET_ID, buf1);
-                        System.out.println("Sending packet to " + serverPlayerEntity.getEntityName());
-                    }
-                });
+                for (String output : outputs) {
+                    PacketByteBuf buf = PacketByteBufs.create();
+                    buf.writeString(output);
+
+                    world.getServer().getPlayerManager().getPlayerList().forEach(serverPlayerEntity -> {
+                        if (serverPlayerEntity.getServerWorld().getDimensionKey() == DimensionTypes.OVERWORLD) {
+                            ServerPlayNetworking.send(serverPlayerEntity, ShipInABottle.SHIP_PACKET_ID, buf);
+                            System.out.println("Sending packet to " + serverPlayerEntity.getEntityName());
+                        }
+                    });
+                }
+
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
