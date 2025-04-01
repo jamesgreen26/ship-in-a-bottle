@@ -1,5 +1,6 @@
 package g_mungus.ship_in_a_bottle.item;
 
+import g_mungus.ship_in_a_bottle.ShipInABottle;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -188,6 +189,7 @@ public class BottleWithoutShip extends BlockItem {
                                 1f
                         );
 
+                        ShipInABottle.updateClientShipData(world.getServer(), shipName, world.getServer().getPlayerManager().getPlayerList());
                     }
                     if (!user.isCreative()) user.addExperienceLevels(-30);
 
