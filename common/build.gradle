@@ -8,7 +8,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modCompileOnly "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
 
-    compileOnly files("libs/vlib-1.20.1-0.0.2-alpha-dev-shadow.jar")
+    compileOnly files("libs/vlib-1.20.1-0.0.4-alpha-dev-shadow.jar")
 
 
     // Architectury API
