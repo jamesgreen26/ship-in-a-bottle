@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "g_mungus.ship_in_a_bottle.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
