@@ -12,7 +12,7 @@
     "sources": "${sources}"
   },
   "license": "${mod_license}",
-  "icon": "assets/ship-in-a-bottle/icon.png",
+  "icon": "assets/ship_in_a_bottle/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -29,8 +29,8 @@
     ]
   },
   "mixins": [
-    "ship-in-a-bottle-common.mixins.json",
-    "ship-in-a-bottle.mixins.json"
+    "ship_in_a_bottle-common.mixins.json",
+    "ship_in_a_bottle.mixins.json"
   ],
   "depends": {
     "minecraft": "${minecraft_version}",

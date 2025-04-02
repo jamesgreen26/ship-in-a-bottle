@@ -1,3 +1,0 @@
-package g_mungus.ship_in_a_bottle.data
-
-class StructuresTest
