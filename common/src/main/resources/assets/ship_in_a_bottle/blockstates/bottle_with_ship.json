@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "ship_in_a_bottle:block/bottle_without_ship",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "ship_in_a_bottle:block/bottle_without_ship",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "ship_in_a_bottle:block/bottle_without_ship"
+    },
+    "facing=west": {
+      "model": "ship_in_a_bottle:block/bottle_without_ship",
+      "y": 90
+    }
+  }
+}

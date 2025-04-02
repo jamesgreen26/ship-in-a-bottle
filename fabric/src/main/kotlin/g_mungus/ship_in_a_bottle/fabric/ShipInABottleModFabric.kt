@@ -8,6 +8,8 @@ object ShipInABottleModFabric: ModInitializer {
     override fun onInitialize() {
         // force VS2 to load before eureka
         ValkyrienSkiesModFabric().onInitialize()
+        registerBlocks()
+        registerItems()
 
         init()
     }
