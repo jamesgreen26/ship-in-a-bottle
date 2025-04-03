@@ -23,6 +23,13 @@ architectury {
     forge()
 }
 
+loom {
+    forge {
+        mixinConfig "ship_in_a_bottle.mixins.json"
+        mixinConfig "ship_in_a_bottle-common.mixins.json"
+    }
+}
+
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
