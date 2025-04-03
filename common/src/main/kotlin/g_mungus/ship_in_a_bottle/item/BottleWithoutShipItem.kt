@@ -1,6 +1,7 @@
 package g_mungus.ship_in_a_bottle.item
 
 import g_mungus.ship_in_a_bottle.ShipInABottle
+import g_mungus.ship_in_a_bottle.networking.NetworkUtils
 import g_mungus.vlib.api.VLibGameUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
@@ -35,6 +36,7 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
                     runEffects(ship.shipAABB, level, pos)
 
                     VLibGameUtils.saveShipToTemplate(ShipInABottle.MOD_ID, level, ship.id, false, true)
+                    NetworkUtils.updateClientShipData(level.server, ship.slug.toString(), level.server.playerList.players)
                 }
                 context.player?.setItemInHand(
                     context.hand,

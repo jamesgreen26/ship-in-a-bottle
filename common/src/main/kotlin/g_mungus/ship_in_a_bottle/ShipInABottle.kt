@@ -1,6 +1,7 @@
 package g_mungus.ship_in_a_bottle
 
 import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipBlockEntity
+import g_mungus.ship_in_a_bottle.networking.NetworkUtils
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntityType
@@ -22,7 +23,8 @@ object ShipInABottle {
 
     @JvmStatic
     fun init() {
-        LOGGER.info("init {}", MOD_ID)
+        LOGGER.info("init")
 
+        NetworkUtils.initializeServer()
     }
 }
