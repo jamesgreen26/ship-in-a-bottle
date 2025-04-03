@@ -2,8 +2,10 @@ package g_mungus.ship_in_a_bottle.block
 
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.RenderShape
 import net.minecraft.world.level.block.SimpleWaterloggedBlock
 import net.minecraft.world.level.block.state.BlockState
@@ -38,5 +40,11 @@ class BottleWithoutShipBlock(properties: Properties) : Block(properties), Simple
 
     fun isTransparent(state: BlockState?, world: BlockGetter?, pos: BlockPos?): Boolean {
         return true
+    }
+
+    override fun getStateForPlacement(context: BlockPlaceContext): BlockState? {
+        return super.getStateForPlacement(context)
+            ?.setValue(BlockStateProperties.HORIZONTAL_FACING, context.horizontalDirection)
+            ?.setValue(BlockStateProperties.WATERLOGGED, context.level.getBlockState(context.clickedPos).`is`(Blocks.WATER))
     }
 }

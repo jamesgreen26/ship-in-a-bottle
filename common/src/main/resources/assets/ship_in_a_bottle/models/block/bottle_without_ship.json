@@ -8,6 +8,7 @@
 		"4": "ship_in_a_bottle:block/bottle_without_ship_opening",
 		"particle": "minecraft:block/glass"
 	},
+	"render_type": "translucent",
 	"elements": [
 		{
 			"from": [2, 0, 4],

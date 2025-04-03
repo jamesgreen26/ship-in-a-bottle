@@ -13,6 +13,7 @@ import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.block.Block
+import org.joml.primitives.AABBic
 import org.valkyrienskies.mod.common.getShipManagingPos
 import kotlin.random.Random
 
@@ -25,38 +26,9 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
         val ship = level.getShipManagingPos(pos)
 
 
-        if (ship != null) {
+        if (ship != null && context.player?.isShiftKeyDown != true) {
             if (level is ServerLevel) {
-                ship.shipAABB?.let {
-                    for (x in it.minX()..it.maxX()) {
-                        for (y in it.minY()..it.maxY()) {
-                            for (z in it.minZ()..it.maxZ()) {
-                                if (!level.getBlockState(BlockPos(x, y, z)).isAir && Random.nextDouble() > 0.7) {
-                                    level.sendParticles(
-                                        ParticleTypes.END_ROD,
-                                        x + 0.5,
-                                        y + 0.5,
-                                        z + 0.5,
-                                        1,
-                                        0.0,
-                                        0.0,
-                                        0.0,
-                                        0.0
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                level.playSound(
-                    null,
-                    pos,
-                    SoundEvents.EVOKER_PREPARE_ATTACK,
-                    SoundSource.PLAYERS,
-                    1f,
-                    1f
-                )
+                runEffects(ship.shipAABB, level, pos)
 
                 VLibGameUtils.saveShipToTemplate(ShipInABottle.MOD_ID, level, ship.id, false, true)
             }
@@ -71,5 +43,34 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
         } else {
             return super.place(context)
         }
+    }
+
+
+
+    private fun runEffects(
+        box: AABBic?,
+        level: ServerLevel,
+        pos: BlockPos
+    ) {
+        box?.let {
+            for (x in it.minX()..it.maxX()) {
+                for (y in it.minY()..it.maxY()) {
+                    for (z in it.minZ()..it.maxZ()) {
+                        if (!level.getBlockState(BlockPos(x, y, z)).isAir && Random.nextDouble() > 0.7) {
+                            level.sendParticles(ParticleTypes.END_ROD, x + 0.5, y + 0.5, z + 0.5, 1, 0.0, 0.0, 0.0, 0.0)
+                        }
+                    }
+                }
+            }
+        }
+
+        level.playSound(
+            null,
+            pos,
+            SoundEvents.EVOKER_PREPARE_ATTACK,
+            SoundSource.PLAYERS,
+            1f,
+            1f
+        )
     }
 }
