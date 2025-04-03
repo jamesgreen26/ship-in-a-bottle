@@ -4,9 +4,11 @@ import g_mungus.ship_in_a_bottle.ShipInABottle
 import g_mungus.ship_in_a_bottle.ShipInABottle.MOD_ID
 import g_mungus.ship_in_a_bottle.block.BottleWithShipBlock
 import g_mungus.ship_in_a_bottle.block.BottleWithoutShipBlock
+import g_mungus.ship_in_a_bottle.block.WaterDisplayBlock
 import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipBlockEntity
 import g_mungus.ship_in_a_bottle.item.BottleWithShipItem
 import g_mungus.ship_in_a_bottle.item.BottleWithoutShipItem
+import g_mungus.ship_in_a_bottle.item.ShipModelItem
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
@@ -19,7 +21,6 @@ import net.minecraft.world.item.Item.Properties
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntityType
-import net.minecraft.world.level.block.state.BlockBehaviour
 
 
 fun registerBlocks() {
@@ -36,6 +37,11 @@ fun registerBlocks() {
             FabricBlockSettings.create().drops(ResourceLocation(MOD_ID, "blocks/bottle_without_ship")).nonOpaque()
                 .hardness(0.8f)
         )
+    )
+
+    ShipInABottle.WATER_DISPLAY_BLOCK = registerBlock(
+        "water_display_block",
+        WaterDisplayBlock()
     )
 
     ShipInABottle.BOTTLE_WITH_SHIP_BE_TYPE = Registry.register(
@@ -56,6 +62,11 @@ fun registerItems() {
     ShipInABottle.BOTTLE_WITH_SHIP_ITEM = registerItem(
         "bottle_with_ship",
         BottleWithShipItem(ShipInABottle.BOTTLE_WITH_SHIP_BLOCK, Properties().stacksTo(1).rarity(Rarity.RARE))
+    )
+
+    ShipInABottle.SHIP_MODEL_ITEM = registerItem(
+        "ship_model",
+        ShipModelItem()
     )
 
     ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)

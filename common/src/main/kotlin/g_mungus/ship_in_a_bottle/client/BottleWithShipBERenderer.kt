@@ -1,6 +1,7 @@
 package g_mungus.ship_in_a_bottle.client
 
 import com.mojang.blaze3d.vertex.PoseStack
+import g_mungus.ship_in_a_bottle.ShipInABottle
 import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipBlockEntity
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
@@ -8,7 +9,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.core.Direction
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.joml.Quaternionf
@@ -49,7 +49,7 @@ class BottleWithShipBERenderer: BlockEntityRenderer<BottleWithShipBlockEntity> {
         val waterHeight = 3.0f / 16.0f
 
         poseStack.scale(0.7f, waterHeight, 0.7f)
-        blockRenderer.renderSingleBlock(Blocks.BLUE_STAINED_GLASS.defaultBlockState(), poseStack, bufferSource, packedLight, packedOverlay)
+        blockRenderer.renderSingleBlock(ShipInABottle.WATER_DISPLAY_BLOCK.defaultBlockState(), poseStack, bufferSource, packedLight, packedOverlay)
 
         poseStack.translate(0.15, 0.3, 0.15)
         poseStack.scale(0.7f, 0.49.toFloat() / waterHeight, 0.7f)
@@ -66,7 +66,9 @@ class BottleWithShipBERenderer: BlockEntityRenderer<BottleWithShipBlockEntity> {
         val rotationValue = (sin(Math.PI / 2 + radiansPerEntity) / 64)
         poseStack.mulPose(Quaternionf(cos(rotationValue), sin(rotationValue), 0.0, 0.0))
 
-        itemRenderer.renderStatic(ItemStack(Items.IRON_AXE), ItemDisplayContext.GUI, packedLight, packedOverlay, poseStack, bufferSource, level, 1)
+
+        poseStack.mulPose(Quaternionf(1f, 0f, 0f, 0f))
+        itemRenderer.renderStatic(ItemStack(ShipInABottle.SHIP_MODEL_ITEM), ItemDisplayContext.GUI, packedLight, packedOverlay, poseStack, bufferSource, level, 1)
         
         poseStack.popPose()
     }

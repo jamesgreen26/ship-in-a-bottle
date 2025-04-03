@@ -1,8 +1,6 @@
 package g_mungus.ship_in_a_bottle
 
 import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipBlockEntity
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
-import net.minecraft.client.renderer.RenderType
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntityType
@@ -15,8 +13,10 @@ object ShipInABottle {
 
     lateinit var BOTTLE_WITH_SHIP_ITEM: Item
     lateinit var BOTTLE_WITHOUT_SHIP_ITEM: Item
+    lateinit var SHIP_MODEL_ITEM: Item
     lateinit var BOTTLE_WITH_SHIP_BLOCK: Block
     lateinit var BOTTLE_WITHOUT_SHIP_BLOCK: Block
+    lateinit var WATER_DISPLAY_BLOCK: Block
     lateinit var BOTTLE_WITH_SHIP_BE_TYPE: BlockEntityType<BottleWithShipBlockEntity>
 
 
