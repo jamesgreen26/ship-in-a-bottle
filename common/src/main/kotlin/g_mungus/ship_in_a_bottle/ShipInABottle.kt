@@ -25,11 +25,4 @@ object ShipInABottle {
         LOGGER.info("init {}", MOD_ID)
 
     }
-
-    @JvmStatic
-    fun initClient() {
-        LOGGER.info("client init")
-        BlockRenderLayerMap.INSTANCE.putBlock(BOTTLE_WITH_SHIP_BLOCK, RenderType.translucent())
-        BlockRenderLayerMap.INSTANCE.putBlock(BOTTLE_WITHOUT_SHIP_BLOCK, RenderType.translucent())
-    }
 }

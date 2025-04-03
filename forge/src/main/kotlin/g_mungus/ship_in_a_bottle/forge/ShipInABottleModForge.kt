@@ -4,8 +4,7 @@ import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import g_mungus.ship_in_a_bottle.ShipInABottle
-import g_mungus.ship_in_a_bottle.ShipInABottle.init
-import g_mungus.ship_in_a_bottle.ShipInABottle.initClient
+import g_mungus.ship_in_a_bottle.client.ShipInABottleClient
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
 @Mod(ShipInABottle.MOD_ID)
@@ -16,11 +15,11 @@ class ShipInABottleModForge {
                 event
             )
         }
-        init()
+        ShipInABottle.init()
     }
 
     private fun clientSetup(event: FMLClientSetupEvent?) {
-        initClient()
+        ShipInABottleClient.init()
     }
 
     companion object {
