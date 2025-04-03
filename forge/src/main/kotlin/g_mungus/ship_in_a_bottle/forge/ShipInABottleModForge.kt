@@ -1,16 +1,20 @@
 package g_mungus.ship_in_a_bottle.forge
 
-import net.minecraftforge.eventbus.api.IEventBus
-import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import g_mungus.ship_in_a_bottle.ShipInABottle
 import g_mungus.ship_in_a_bottle.client.BottleWithShipBERenderer
 import g_mungus.ship_in_a_bottle.client.ShipInABottleClient
 import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers
+import net.minecraft.world.item.CreativeModeTabs
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent
+import net.minecraftforge.eventbus.api.IEventBus
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
+
 
 @Mod(ShipInABottle.MOD_ID)
 class ShipInABottleModForge {
@@ -30,6 +34,12 @@ class ShipInABottleModForge {
             Blocks.setup(event)
             Items.setup(event)
             BlockEntities.setup(event)
+        }
+
+        MOD_BUS.addListener { event: BuildCreativeModeTabContentsEvent ->
+            if (event.tabKey === CreativeModeTabs.TOOLS_AND_UTILITIES) {
+                event.accept(ShipInABottle.BOTTLE_WITHOUT_SHIP_ITEM)
+            }
         }
 
         ShipInABottle.init()
