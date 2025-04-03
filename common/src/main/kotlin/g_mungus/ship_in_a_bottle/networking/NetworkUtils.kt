@@ -50,14 +50,11 @@ object NetworkUtils {
                     val data = DisplayableShipData.deserialize(bytes)
                     if (ShipInABottleClient.shipDisplayData[data.shipName] == null || ShipInABottleClient.shipDisplayData[data.shipName]!!.updated != data.updated
                     ) {
-                        println("creating new ship")
                         ShipInABottleClient.shipDisplayData[data.shipName] = data
                     } else {
-                        println("adding " + data.data.size + " elements to existing ship")
                         ShipInABottleClient.shipDisplayData[data.shipName]!!.data.addAll(data.data)
                     }
 
-                    println("received. New ship size: " + ShipInABottleClient.shipDisplayData[data.shipName]!!.data.size + "Packet timestamp: " + data.updated)
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
@@ -76,8 +73,6 @@ object NetworkUtils {
         if (manager.get(ResourceLocation(MOD_ID, shipName)).isEmpty) {
             LOGGER.warn("template not found for {}", shipName)
             return
-        } else {
-            LOGGER.info("Syncing ship data from {}", shipName)
         }
 
         val template: StructureTemplate = manager.get(ResourceLocation(MOD_ID, shipName)).get()
