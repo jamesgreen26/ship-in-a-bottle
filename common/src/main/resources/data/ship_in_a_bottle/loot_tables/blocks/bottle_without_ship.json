@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ship_in_a_bottle:bottle_without_ship"
+        }
+      ]
+    }
+  ]
+}

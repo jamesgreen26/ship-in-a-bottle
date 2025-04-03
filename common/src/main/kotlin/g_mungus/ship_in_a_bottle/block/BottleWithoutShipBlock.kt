@@ -40,7 +40,7 @@ class BottleWithoutShipBlock(properties: Properties) : Block(properties), Simple
 
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState? {
         return super.getStateForPlacement(context)
-            ?.setValue(BlockStateProperties.HORIZONTAL_FACING, context.horizontalDirection)
+            ?.setValue(BlockStateProperties.HORIZONTAL_FACING, context.horizontalDirection.clockWise)
             ?.setValue(BlockStateProperties.WATERLOGGED, context.level.getBlockState(context.clickedPos).`is`(Blocks.WATER))
     }
 

@@ -47,7 +47,7 @@ fun registerBlocks() {
     ShipInABottle.BOTTLE_WITH_SHIP_BE_TYPE = Registry.register(
         BuiltInRegistries.BLOCK_ENTITY_TYPE,
         ResourceLocation.tryBuild(MOD_ID, "bottle_with_ship_entity")!!,
-        BlockEntityType.Builder.of({ pos, state -> BottleWithShipBlockEntity(pos, state) }, ShipInABottle.BOTTLE_WITH_SHIP_BLOCK).build(null)
+        BlockEntityType.Builder.of({ pos, state -> BottleWithShipBlockEntity(pos, state, BottleWithShipBlockEntity.NO_SHIP) }, ShipInABottle.BOTTLE_WITH_SHIP_BLOCK).build(null)
     )
 }
 
