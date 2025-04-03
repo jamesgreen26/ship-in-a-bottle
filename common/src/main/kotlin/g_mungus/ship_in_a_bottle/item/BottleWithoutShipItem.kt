@@ -2,9 +2,11 @@ package g_mungus.ship_in_a_bottle.item
 
 import g_mungus.ship_in_a_bottle.ShipInABottle
 import g_mungus.vlib.api.VLibGameUtils
+import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -27,19 +29,28 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
 
 
         if (ship != null && context.player?.isShiftKeyDown != true) {
-            if (level is ServerLevel) {
-                runEffects(ship.shipAABB, level, pos)
+            val player = context.player?: return InteractionResult.PASS
+            if (player.experienceLevel >= 30 || player.isCreative) {
+                if (level is ServerLevel) {
+                    runEffects(ship.shipAABB, level, pos)
 
-                VLibGameUtils.saveShipToTemplate(ShipInABottle.MOD_ID, level, ship.id, false, true)
-            }
-            context.player?.setItemInHand(
-                context.hand,
-                ItemStack(ShipInABottle.BOTTLE_WITH_SHIP_ITEM).apply {
-                    tag = CompoundTag().apply { putString("Ship", ship.slug.toString()) }
+                    VLibGameUtils.saveShipToTemplate(ShipInABottle.MOD_ID, level, ship.id, false, true)
                 }
-            )
-            context.player?.swing(context.hand)
-            return InteractionResult.SUCCESS
+                context.player?.setItemInHand(
+                    context.hand,
+                    ItemStack(ShipInABottle.BOTTLE_WITH_SHIP_ITEM).apply {
+                        tag = CompoundTag().apply { putString("Ship", ship.slug.toString()) }
+                    }
+                )
+                if (!player.isCreative) player.giveExperienceLevels(-30)
+                context.player?.swing(context.hand)
+                return InteractionResult.SUCCESS
+            } else {
+                if (context.level.isClientSide) {
+                    Minecraft.getInstance().gui.setOverlayMessage(Component.literal("Not enough levels."), false)
+                }
+                return InteractionResult.FAIL
+            }
         } else {
             return super.place(context)
         }
