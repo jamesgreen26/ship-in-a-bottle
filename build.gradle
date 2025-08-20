@@ -112,6 +112,11 @@ allprojects {
             name = "Sinytra"
             url = "https://maven.su5ed.dev/releases"
         }
+
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+        }
     }
 
     tasks.withType(JavaCompile) {
