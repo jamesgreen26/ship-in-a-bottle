@@ -14,6 +14,26 @@ class DisplayableShipData(
 ) : Serializable {
     var data: MutableList<BlockInfo> = mutableListOf()
 
+    private var lengthOfDataAtLastUpdate = 0
+    private var dataSorted: Map<Int, List<BlockPos>> = mapOf()
+
+    fun getSortedData(): Map<Int, List<BlockPos>> {
+        if (data.size != lengthOfDataAtLastUpdate) {
+            updateDataSorted()
+        }
+
+        return dataSorted
+    }
+
+    private fun updateDataSorted() {
+        dataSorted = data
+            .groupBy { it.stateId }
+            .mapValues { (_, blockInfoList) ->
+                blockInfoList.map { BlockPos(it.x, it.y, it.z) }
+            }
+        lengthOfDataAtLastUpdate = data.size
+    }
+
 
     class BlockInfo(
         val x: Int,

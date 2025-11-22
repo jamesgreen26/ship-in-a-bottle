@@ -1,7 +1,7 @@
 package g_mungus.ship_in_a_bottle.item
 
 import g_mungus.ship_in_a_bottle.ShipInABottle
-import g_mungus.ship_in_a_bottle.structure.StructurePlacer
+import g_mungus.vlib.v2.api.VLibAPI
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
+import kotlin.jvm.optionals.getOrNull
 import kotlin.math.min
 
 class BottleWithShipItem(block: Block, properties: Properties) : BlockItem(block, properties) {
@@ -72,15 +73,18 @@ class BottleWithShipItem(block: Block, properties: Properties) : BlockItem(block
 
         itemStack.orCreateTag.getString("Ship").takeUnless { it.isBlank() }?.let { name ->
             if (level is ServerLevel) {
-                val placer = StructurePlacer(level, ResourceLocation(ShipInABottle.MOD_ID, name), blockPos)
-                val x = placer.size.x
-                val y = placer.size.y
-                val z = placer.size.z
+                val template = level.structureManager.get(ResourceLocation(ShipInABottle.MOD_ID, name)).getOrNull()
+                    ?: return InteractionResultHolder.fail(result)
+
+                val x = template.size.x
+                val y = template.size.y
+                val z = template.size.z
                 val direction = player.direction
 
-                placer.offset = BlockPos(direction.normal.multiply(min(x, z) / 2)).offset(0, y/2, 0)
+                val placePos = blockPos.offset(direction.normal.multiply(min(x, z) / 2)).offset(0, y/2, 0)
 
-                placer.place()
+                val ship = VLibAPI.placeTemplateAsShip(template, level, placePos, false)
+                ship?.slug = name
             }
             return InteractionResultHolder.success(result)
         }

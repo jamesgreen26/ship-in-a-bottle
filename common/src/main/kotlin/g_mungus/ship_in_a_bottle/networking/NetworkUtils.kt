@@ -32,7 +32,6 @@ object NetworkUtils {
             server.overworld().structureManager.listTemplates()
                 .filter { identifier -> identifier.namespace == MOD_ID }
                 .forEach { identifier ->
-                    LOGGER.info("Found ship: {}", identifier)
                     val shipName: String = identifier.toString().replace("$MOD_ID:", "")
 
                     updateClientShipData(server, shipName, listOf(handler.player))
@@ -126,7 +125,6 @@ object NetworkUtils {
                     SHIP_PACKET_ID,
                     buf
                 )
-                LOGGER.info("Sending packet to {}", serverPlayerEntity.name.string)
             }
         }
     }

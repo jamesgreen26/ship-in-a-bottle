@@ -2,12 +2,14 @@ package g_mungus.ship_in_a_bottle.item
 
 import g_mungus.ship_in_a_bottle.ShipInABottle
 import g_mungus.ship_in_a_bottle.networking.NetworkUtils
-import g_mungus.vlib.api.VLibGameUtils
+import g_mungus.vlib.v2.api.extension.discard
+import g_mungus.vlib.v2.api.extension.saveToTemplate
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -17,6 +19,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.block.Block
 import org.joml.primitives.AABBic
+import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.mod.common.getShipManagingPos
 import kotlin.random.Random
 
@@ -30,13 +33,24 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
 
 
         if (ship != null && context.player?.isShiftKeyDown != true) {
-            val player = context.player?: return InteractionResult.PASS
+            val player = context.player ?: return InteractionResult.PASS
             if (player.experienceLevel >= 30 || player.isCreative) {
-                if (level is ServerLevel) {
+                if (level is ServerLevel && ship is ServerShip) {
                     runEffects(ship.shipAABB, level, pos)
 
-                    VLibGameUtils.saveShipToTemplate(ShipInABottle.MOD_ID, level, ship.id, false, true)
-                    NetworkUtils.updateClientShipData(level.server, ship.slug.toString(), level.server.playerList.players)
+                    ship.saveToTemplate(
+                        ResourceLocation(
+                            ShipInABottle.MOD_ID,
+                            ship.slug ?: level.random.nextInt().toString()
+                        ), level
+                    )
+                    ship.discard(level)
+
+                    NetworkUtils.updateClientShipData(
+                        level.server,
+                        ship.slug.toString(),
+                        level.server.playerList.players
+                    )
                 }
                 context.player?.setItemInHand(
                     context.hand,
@@ -57,7 +71,6 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
             return super.place(context)
         }
     }
-
 
 
     private fun runEffects(
