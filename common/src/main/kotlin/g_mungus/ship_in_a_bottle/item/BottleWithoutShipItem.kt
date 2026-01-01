@@ -2,8 +2,7 @@ package g_mungus.ship_in_a_bottle.item
 
 import g_mungus.ship_in_a_bottle.ShipInABottle
 import g_mungus.ship_in_a_bottle.networking.NetworkUtils
-import g_mungus.vlib.v2.api.extension.discard
-import g_mungus.vlib.v2.api.extension.saveToTemplate
+import g_mungus.vlib.v2.api.VLibAPI
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
@@ -38,13 +37,14 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
                 if (level is ServerLevel && ship is ServerShip) {
                     runEffects(ship.shipAABB, level, pos)
 
-                    ship.saveToTemplate(
+                    VLibAPI.saveShipToTemplate(
+                        ship,
                         ResourceLocation(
                             ShipInABottle.MOD_ID,
                             ship.slug ?: level.random.nextInt().toString()
                         ), level
                     )
-                    ship.discard(level)
+                    VLibAPI.discardShip(ship, level)
 
                     NetworkUtils.updateClientShipData(
                         level.server,

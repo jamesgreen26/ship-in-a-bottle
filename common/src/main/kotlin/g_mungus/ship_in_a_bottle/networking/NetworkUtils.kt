@@ -5,64 +5,65 @@ import g_mungus.ship_in_a_bottle.ShipInABottle.MOD_ID
 import g_mungus.ship_in_a_bottle.client.ShipInABottleClient
 import g_mungus.ship_in_a_bottle.util.BlockInfoListProvider
 import g_mungus.ship_in_a_bottle.networking.DisplayableShipData.BlockInfo
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs
-import net.fabricmc.fabric.api.networking.v1.PacketSender
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
-import net.minecraft.client.Minecraft
-import net.minecraft.client.multiplayer.ClientPacketListener
-import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.server.network.ServerGamePacketListenerImpl
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 object NetworkUtils {
-    private val SHIP_PACKET_ID = ResourceLocation(MOD_ID, "ship-packet")
+    // Platform implementation - will be set by platform module during initialization
+    lateinit var platformNetworking: PlatformNetworking
+
+    val SHIP_PACKET_ID = ResourceLocation(MOD_ID, "ship-packet")
 
     fun initializeServer() {
-        ServerPlayConnectionEvents.JOIN.register(ServerPlayConnectionEvents.Join { handler: ServerGamePacketListenerImpl, _: PacketSender?, server: MinecraftServer ->
-            server.overworld().structureManager.listTemplates()
-                .filter { identifier -> identifier.namespace == MOD_ID }
-                .forEach { identifier ->
-                    val shipName: String = identifier.toString().replace("$MOD_ID:", "")
-
-                    updateClientShipData(server, shipName, listOf(handler.player))
-                }
-        })
+        platformNetworking.initializeServer()
+        platformNetworking.registerServerJoinHandler { server, player ->
+            onPlayerJoin(server, player)
+        }
     }
 
     fun initializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(
-            SHIP_PACKET_ID
-        ) { client: Minecraft, _: ClientPacketListener?, buf: FriendlyByteBuf, _: PacketSender? ->
-            val bytes: String = buf.readUtf()
-            client.execute {
-                try {
-                    val data = DisplayableShipData.deserialize(bytes)
-                    if (ShipInABottleClient.shipDisplayData[data.shipName] == null || ShipInABottleClient.shipDisplayData[data.shipName]!!.updated != data.updated
-                    ) {
-                        ShipInABottleClient.shipDisplayData[data.shipName] = data
-                    } else {
-                        ShipInABottleClient.shipDisplayData[data.shipName]!!.data.addAll(data.data)
-                    }
+        platformNetworking.initializeClient()
+        platformNetworking.registerClientPacketHandler { serializedData ->
+            onClientReceiveShipData(serializedData)
+        }
+        platformNetworking.registerClientDisconnectHandler {
+            ShipInABottleClient.shipDisplayData.clear()
+        }
+    }
 
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
+    private fun onPlayerJoin(server: MinecraftServer, player: ServerPlayer) {
+        server.overworld().structureManager.listTemplates()
+            .filter { identifier -> identifier.namespace == MOD_ID }
+            .forEach { identifier ->
+                val shipName: String = identifier.toString().replace("$MOD_ID:", "")
+                updateClientShipData(server, shipName, listOf(player))
+            }
+    }
+
+    private fun onClientReceiveShipData(serializedData: String) {
+        try {
+            val data = DisplayableShipData.deserialize(serializedData)
+
+            // Use atomic compute to handle concurrent packet arrival safely
+            ShipInABottleClient.shipDisplayData.compute(data.shipName) { _, existingData ->
+                if (existingData == null || existingData.updated != data.updated) {
+                    // New ship or updated ship - replace completely
+                    data
+                } else {
+                    // Same timestamp - this is a continuation packet, append blocks
+                    existingData.data.addAll(data.data)
+                    existingData
                 }
             }
+        } catch (e: Exception) {
+            LOGGER.error("Failed to process ship data packet", e)
         }
-
-        ClientPlayConnectionEvents.DISCONNECT.register(ClientPlayConnectionEvents.Disconnect { handler: ClientPacketListener?, client: Minecraft? ->
-            ShipInABottleClient.shipDisplayData.clear()
-        })
     }
 
     fun updateClientShipData(server: MinecraftServer, shipName: String, players: List<ServerPlayer>) {
@@ -99,7 +100,7 @@ object NetworkUtils {
                         val ser = DisplayableShipData.serialize(data)
                         outputs.add(ser)
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        LOGGER.error("Failed to serialize ship data chunk for {}", shipName, e)
                     }
                     data.data.clear()
                     i.set(0)
@@ -111,20 +112,15 @@ object NetworkUtils {
                 val ser = DisplayableShipData.serialize(data)
                 outputs.add(ser)
             } catch (e: Exception) {
-                e.printStackTrace()
+                LOGGER.error("Failed to serialize final ship data chunk for {}", shipName, e)
             }
         }
 
         for (output in outputs) {
-            val buf: FriendlyByteBuf = PacketByteBufs.create()
-            buf.writeUtf(output)
-
-            players.forEach { serverPlayerEntity: ServerPlayer ->
-                ServerPlayNetworking.send(
-                    serverPlayerEntity,
-                    SHIP_PACKET_ID,
-                    buf
-                )
+            try {
+                platformNetworking.sendShipDataPacket(output, players)
+            } catch (e: Exception) {
+                LOGGER.error("Failed to send ship data packet for {}", shipName, e)
             }
         }
     }
