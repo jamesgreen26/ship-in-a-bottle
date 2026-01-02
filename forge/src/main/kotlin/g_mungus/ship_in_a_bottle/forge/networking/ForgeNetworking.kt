@@ -1,11 +1,12 @@
 package g_mungus.ship_in_a_bottle.forge.networking
 
 import g_mungus.ship_in_a_bottle.ShipInABottle.MOD_ID
-import g_mungus.ship_in_a_bottle.networking.NetworkUtils
 import g_mungus.ship_in_a_bottle.networking.PlatformNetworking
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -105,6 +106,7 @@ object ForgeNetworking : PlatformNetworking {
      * Event handler for player logout - must be registered on FORGE event bus.
      * This handles client-side cleanup.
      */
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     fun onClientDisconnect(event: ClientPlayerNetworkEvent.LoggingOut) {
         clientDisconnectHandler?.invoke()
