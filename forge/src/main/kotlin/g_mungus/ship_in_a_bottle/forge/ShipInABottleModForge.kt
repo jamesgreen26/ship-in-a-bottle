@@ -3,16 +3,20 @@ package g_mungus.ship_in_a_bottle.forge
 import g_mungus.ship_in_a_bottle.ShipInABottle
 import g_mungus.ship_in_a_bottle.client.BottleWithShipBERenderer
 import g_mungus.ship_in_a_bottle.client.ShipInABottleClient
+import g_mungus.ship_in_a_bottle.config.ShipInABottleConfigUpdater
 import g_mungus.ship_in_a_bottle.networking.NetworkUtils
 import g_mungus.ship_in_a_bottle.forge.networking.ForgeNetworking
 import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers
 import net.minecraft.world.item.CreativeModeTabs
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.config.ModConfig
+import net.minecraftforge.fml.event.config.ModConfigEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
@@ -25,6 +29,12 @@ class ShipInABottleModForge {
         Items.register(MOD_BUS)
         BlockEntities.register(MOD_BUS)
 
+        // Register config
+        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ShipInABottleConfigUpdater.CLIENT_SPEC, "ship_in_a_bottle/client.toml")
+        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ShipInABottleConfigUpdater.SERVER_SPEC, "ship_in_a_bottle/server.toml")
+
+        MOD_BUS.addListener(this::onConfigLoading)
+        MOD_BUS.addListener(this::onConfigReloading)
 
         MOD_BUS.addListener { event: FMLClientSetupEvent? ->
             clientSetup(
@@ -53,6 +63,14 @@ class ShipInABottleModForge {
 
         // Register ForgeNetworking event handlers on the FORGE event bus
         MinecraftForge.EVENT_BUS.register(ForgeNetworking)
+    }
+
+    private fun onConfigLoading(event: ModConfigEvent.Loading) {
+        ShipInABottleConfigUpdater.update(event.config)
+    }
+
+    private fun onConfigReloading(event: ModConfigEvent.Reloading) {
+        ShipInABottleConfigUpdater.update(event.config)
     }
 
     private fun clientSetup(event: FMLClientSetupEvent?) {

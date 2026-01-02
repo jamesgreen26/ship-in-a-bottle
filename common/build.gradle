@@ -16,6 +16,9 @@ dependencies {
     // Valkyrien Skies 2
     modApi("org.valkyrienskies:valkyrienskies-120-common:${rootProject.vs2_version}")
 
+    modCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common:8.0.0"
+
+
     // VS Core
     compileOnly("org.valkyrienskies.core:api:${rootProject.vs_core_version}")
     compileOnly("org.valkyrienskies.core:internal:${rootProject.vs_core_version}")

@@ -31,6 +31,8 @@ dependencies {
     // Architectury API
     include(modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
+    include(modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:8.0.0")
+
     // Mod menu
     modImplementation("com.terraformersmc:modmenu:3.2.3")
     modImplementation("me.shedaniel.cloth:cloth-config:${cloth_config_version}")

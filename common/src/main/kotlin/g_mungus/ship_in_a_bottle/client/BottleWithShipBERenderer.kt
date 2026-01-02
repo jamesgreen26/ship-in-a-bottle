@@ -3,6 +3,8 @@ package g_mungus.ship_in_a_bottle.client
 import com.mojang.blaze3d.vertex.PoseStack
 import g_mungus.ship_in_a_bottle.ShipInABottle
 import g_mungus.ship_in_a_bottle.block.entity.BottleWithShipBlockEntity
+import g_mungus.ship_in_a_bottle.config.RenderQuality
+import g_mungus.ship_in_a_bottle.config.ShipInABottleConfig
 import g_mungus.ship_in_a_bottle.networking.DisplayableShipData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
@@ -82,7 +84,7 @@ class BottleWithShipBERenderer : BlockEntityRenderer<BottleWithShipBlockEntity> 
 
         val data = ShipInABottleClient.shipDisplayData[blockEntity.getShipName()]
 
-        if (blockEntity.getShipName().isBlank() || data == null) {
+        if (blockEntity.getShipName().isBlank() || data == null || ShipInABottleConfig.Client.renderQuality == RenderQuality.Fast) {
             renderSimpleShip(poseStack, itemRenderer, packedLight, packedOverlay, bufferSource, level)
         } else {
             renderAuthenticShip(data, poseStack, blockRenderer, bufferSource, packedLight, packedOverlay)

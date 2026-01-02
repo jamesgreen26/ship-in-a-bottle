@@ -1,6 +1,7 @@
 package g_mungus.ship_in_a_bottle.item
 
 import g_mungus.ship_in_a_bottle.ShipInABottle
+import g_mungus.ship_in_a_bottle.config.ShipInABottleConfig
 import g_mungus.ship_in_a_bottle.networking.NetworkUtils
 import g_mungus.vlib.v2.api.VLibAPI
 import net.minecraft.client.Minecraft
@@ -33,7 +34,7 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
 
         if (ship != null && context.player?.isShiftKeyDown != true) {
             val player = context.player ?: return InteractionResult.PASS
-            if (player.experienceLevel >= 30 || player.isCreative) {
+            if (player.experienceLevel >= ShipInABottleConfig.Server.bottleXpCost || player.isCreative) {
                 if (level is ServerLevel && ship is ServerShip) {
                     runEffects(ship.shipAABB, level, pos)
 
@@ -58,7 +59,13 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
                         tag = CompoundTag().apply { putString("Ship", ship.slug.toString()) }
                     }
                 )
-                if (!player.isCreative) player.giveExperienceLevels(-30)
+                if (!context.level.isClientSide && ShipInABottleConfig.Server.bottleXpCost > 0) {
+                    if (!player.isCreative) player.giveExperiencePoints(
+                        -1 * (xpCostByLevel.getOrNull(
+                            ShipInABottleConfig.Server.bottleXpCost
+                        ) ?: xpCostByLevel.last())
+                    )
+                }
                 context.player?.swing(context.hand)
                 return InteractionResult.SUCCESS
             } else {
@@ -99,4 +106,8 @@ class BottleWithoutShipItem(block: Block, properties: Properties) : BlockItem(bl
             1f
         )
     }
+
+    val xpCostByLevel = listOf(
+        0, 7, 16, 27, 40, 55, 72, 91, 112, 135, 160, 187, 216, 247, 280, 315, 352, 394, 441, 493, 550, 612, 679, 751, 828, 910, 997, 1089, 1186, 1288, 1395
+    )
 }
